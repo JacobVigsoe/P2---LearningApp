@@ -1,14 +1,26 @@
 using UnityEngine;
 
+[System.Serializable]
+public class TreePrefabDensity
+{
+    public GameObject treePrefab;
+    [Range(0f, 1f)]
+    public float densityPercentage;
+}
+
 public class ProceduralPlanet : MonoBehaviour
 {
+    public float orbitSpeed = 1f;
+
     public int subdivisions = 20;
     public float radius = 5f;
     public Material blueMaterial;
     public Material greenMaterial;
     public float threshold = 0.5f; // Threshold for mesh visibility
-    public GameObject treePrefab; // Reference to the tree prefab to be spawned
-    public float treeDensity = 0.1f; // Adjust this value to control tree density
+    public TreePrefabDensity[] treePrefabs; // Array of tree prefabs with associated density percentages
+    public float minTreeSize = 0.5f;
+    public float maxTreeSize = 2f;
+
     public float noiseScale = 2f; // Adjust this value to control the size of deleted mesh chunks
 
     void Start()
@@ -16,6 +28,11 @@ public class ProceduralPlanet : MonoBehaviour
         CreateSphere();
     }
 
+    void Update()
+    {
+        // Orbit around a central point (you may need to adjust the orbit axis and center point)
+        transform.RotateAround(Vector3.zero, Vector3.up, orbitSpeed * Time.deltaTime);
+    }
     void CreateSphere()
     {
         MeshFilter meshFilter = gameObject.AddComponent<MeshFilter>();
@@ -77,9 +94,9 @@ public class ProceduralPlanet : MonoBehaviour
                     tris += 6;
 
                     // Spawn tree objects based on density
-                    if (Random.value < treeDensity)
+                    if (Random.value < GetTotalDensity())
                     {
-                        SpawnTree(vertices[vert]);
+                        SpawnRandomTree(vertices[vert]);
                     }
                 }
 
@@ -103,12 +120,49 @@ public class ProceduralPlanet : MonoBehaviour
         meshRenderer.materials = new Material[] { blueMaterial, greenMaterial };
     }
 
-    void SpawnTree(Vector3 position)
+    void SpawnRandomTree(Vector3 position)
     {
         // Calculate the rotation to point towards the center of the sphere
         Quaternion rotation = Quaternion.FromToRotation(Vector3.up, position.normalized);
 
-        // Instantiate the tree prefab with the calculated rotation
-        Instantiate(treePrefab, position, rotation);
+        // Randomly select a tree prefab based on its density percentage
+        GameObject selectedPrefab = SelectRandomTreePrefab();
+
+        // Generate random scale factors for the tree within the specified range
+        float scaleFactor = Random.Range(minTreeSize, maxTreeSize);
+
+        // Instantiate the randomly chosen tree prefab with the calculated rotation
+        GameObject treeInstance = Instantiate(selectedPrefab, position, rotation);
+
+        // Apply the random scale factors to the tree instance
+        treeInstance.transform.localScale *= scaleFactor;
+    }
+
+    GameObject SelectRandomTreePrefab()
+    {
+        float randomValue = Random.value;
+        float cumulativeDensity = 0f;
+
+        foreach (TreePrefabDensity treePrefab in treePrefabs)
+        {
+            cumulativeDensity += treePrefab.densityPercentage;
+            if (randomValue <= cumulativeDensity)
+            {
+                return treePrefab.treePrefab;
+            }
+        }
+
+        // Fallback: Return the last tree prefab if selection fails
+        return treePrefabs[treePrefabs.Length - 1].treePrefab;
+    }
+
+    float GetTotalDensity()
+    {
+        float totalDensity = 0f;
+        foreach (TreePrefabDensity treePrefab in treePrefabs)
+        {
+            totalDensity += treePrefab.densityPercentage;
+        }
+        return totalDensity;
     }
 }
