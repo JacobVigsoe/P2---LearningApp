@@ -29,18 +29,18 @@ public class ProceduralSphereColoring : MonoBehaviour
         // Iterate through each vertex
         for (int i = 0; i < numVertices; i++)
         {
-            // Calculate the y-coordinate of the current vertex
-            float yPos = vertices[i].y;
+            // Randomly choose between green and blue color
+            Color vertexColor = Random.value < 0.5f ? greenMaterial.color : blueMaterial.color;
 
-            // Set the color of the current vertex based on its y-coordinate
-            colors[i] = yPos > 0 ? greenMaterial.color : blueMaterial.color;
+            // Set the color of the current vertex
+            colors[i] = vertexColor;
         }
 
         // Assign the colors to the mesh
         mesh.colors = colors;
 
         // Assign the materials to the renderer
-        Material[] materials = new Material[2] { greenMaterial, blueMaterial };
+        Material[] materials = new Material[2] { greenMaterial, blueMaterial }; // Assign both materials
         renderer.materials = materials;
     }
 }
