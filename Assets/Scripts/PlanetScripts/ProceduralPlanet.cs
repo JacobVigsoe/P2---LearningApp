@@ -1,12 +1,5 @@
 using UnityEngine;
 
-[System.Serializable]
-public class TreePrefabDensity
-{
-    public GameObject treePrefab;
-    [Range(0f, 1f)]
-    public float densityPercentage;
-}
 
 public class ProceduralPlanet : MonoBehaviour
 {
