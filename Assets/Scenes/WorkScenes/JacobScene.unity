@@ -15,12 +15,12 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 0
-  m_FogColor: {r: 0.8854167, g: 0.81944454, b: 0.6076389, a: 1}
+  m_FogColor: {r: 0.54942775, g: 0.7596053, b: 0.7803139, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.79240626, g: 0.4358251, b: 0.17958933, a: 1}
+  m_AmbientSkyColor: {r: 1, g: 0.9756812, b: 0.9568456, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -309,10 +309,18 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: c94a9f58733351e4ea7967fd1de8e8d0, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: -6478536213147159724, guid: 572db947bafdfd2438590c3046e73b9e, type: 3}
+      objectReference: {fileID: 2100000, guid: 2a631a2784c67234f94b5148a8dd2fd2, type: 2}
     - target: {fileID: 919132149155446097, guid: c94a9f58733351e4ea7967fd1de8e8d0, type: 3}
       propertyPath: m_Name
       value: trekant_land_planet_lol
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c94a9f58733351e4ea7967fd1de8e8d0, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164078558771037576, guid: c94a9f58733351e4ea7967fd1de8e8d0, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 123
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -697,6 +705,8 @@ MonoBehaviour:
     densityPercentage: 0
   minTreeSize: 0.05
   maxTreeSize: 0.1
+  HousePrefab: {fileID: 919132149155446097, guid: af612da11ec2da941b74c1e362b0bef4, type: 3}
+  xpstats: {fileID: 1565281511}
 --- !u!114 &208028420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1095,6 +1105,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 1ce067d156d24fc45ad7a75fb3de31be, type: 3}
       propertyPath: m_Name
       value: trekant_planet_lol
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1ce067d156d24fc45ad7a75fb3de31be, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 123
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164078558771037576, guid: 1ce067d156d24fc45ad7a75fb3de31be, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 123
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3563,6 +3581,80 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1565164712}
   m_CullTransparentMesh: 1
+--- !u!1 &1565281507
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1565281510}
+  - component: {fileID: 1565281511}
+  - component: {fileID: 1565281512}
+  - component: {fileID: 1565281508}
+  m_Layer: 0
+  m_Name: XPManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1565281508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565281507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7dbcea4e302832449a6526c3d29e903, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1565281510
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565281507}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.3318773, y: 1.6170049, z: -3.0284512}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1565281511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565281507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43adbcbb6babec84da7af114259cfc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentXP: 0
+  MaxXP: 300
+  CurrentLevel: 1
+  spawnOnObjectScript: {fileID: 208028417}
+--- !u!114 &1565281512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565281507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 484b297257a08ff429f828b2f4fa9712, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1651521218
 GameObject:
   m_ObjectHideFlags: 0
@@ -4526,7 +4618,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2047948482}
   - component: {fileID: 2047948481}
-  - component: {fileID: 2047948483}
   - component: {fileID: 2047948484}
   m_Layer: 0
   m_Name: Directional Light
@@ -4546,7 +4637,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.41960788, g: 0.41960788, b: 0.41960788, a: 1}
+  m_Color: {r: 0.95294124, g: 0.95294124, b: 0.95294124, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -4605,26 +4696,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2047948480}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.011376112, y: 0.98767215, z: -0.13002947, w: 0.08641018}
+  m_LocalRotation: {x: 0.061628457, y: 0.70441604, z: -0.70441604, w: 0.061628457}
   m_LocalPosition: {x: 5.8100004, y: -0.18000007, z: 0.0000047882513}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 19.588, y: -332.687, z: 25.154}
---- !u!114 &2047948483
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2047948480}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6c779938423114499b0166a3e3432e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  orbitSpeed: 1
 --- !u!114 &2047948484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4639,7 +4717,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DirectionalLight: {fileID: 2047948481}
   Preset: {fileID: 11400000, guid: cc57249125899de42a0f465b9ed53158, type: 2}
-  TimeOfDay: 7
+  TimeOfDay: 12
   timeMultiplier: 0.5
 --- !u!1 &2124384746
 GameObject:
@@ -4782,6 +4860,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 2034047596}
+  - {fileID: 1565281510}
   - {fileID: 2047948482}
   - {fileID: 1061900471}
   - {fileID: 1238677420}
