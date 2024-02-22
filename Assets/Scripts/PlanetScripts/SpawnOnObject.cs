@@ -10,7 +10,7 @@ public class TreePrefabDensity
 
 public class SpawnOnObject : MonoBehaviour
 {
-    public Mesh mesh;
+    public GameObject objectToSpawnUnder; // Reference to the object to spawn trees under
     public int numberOfTreesToSpawn = 10; // Adjust this value to control the number of trees to spawn
     public TreePrefabDensity[] treePrefabs; // Array of tree prefabs with associated density percentages
     public float minTreeSize = 0.5f;
@@ -23,10 +23,23 @@ public class SpawnOnObject : MonoBehaviour
 
     void SpawnTrees()
     {
+        if (objectToSpawnUnder == null)
+        {
+            Debug.LogError("Please assign the object to spawn trees under in the Inspector.");
+            return;
+        }
+
+        Mesh mesh = objectToSpawnUnder.GetComponent<MeshFilter>().sharedMesh;
+        if (mesh == null)
+        {
+            Debug.LogError("The selected object does not have a MeshFilter component.");
+            return;
+        }
+
         for (int i = 0; i < numberOfTreesToSpawn; i++)
         {
-            // Get a random point on the surface of each face of the mesh
-            Vector3 spawnPosition = RandomPointOnMeshFace(mesh);
+            // Get a random point within a triangle on the surface of the mesh
+            Vector3 spawnPosition = RandomPointInTriangle(mesh);
 
             // Get the rotation to orient the tree away from the center of the sphere
             Quaternion spawnRotation = Quaternion.FromToRotation(Vector3.up, spawnPosition.normalized);
@@ -36,37 +49,38 @@ public class SpawnOnObject : MonoBehaviour
         }
     }
 
-    Vector3 RandomPointOnMeshFace(Mesh mesh)
+    Vector3 RandomPointInTriangle(Mesh mesh)
     {
-        // Randomly select a triangle (face) from the mesh
-        int randomTriangleIndex = Random.Range(0, mesh.triangles.Length / 3); // Each triangle has 3 indices
+        // Randomly select a triangle index
+        int randomTriangleIndex = Random.Range(0, mesh.triangles.Length / 3); // Mesh.triangles contains vertex indices of triangles
 
-        // Get the vertices of the selected triangle
-        int index0 = mesh.triangles[randomTriangleIndex * 3];
-        int index1 = mesh.triangles[randomTriangleIndex * 3 + 1];
-        int index2 = mesh.triangles[randomTriangleIndex * 3 + 2];
-        Vector3 vertex0 = mesh.vertices[index0];
-        Vector3 vertex1 = mesh.vertices[index1];
-        Vector3 vertex2 = mesh.vertices[index2];
+        // Get the vertex indices of the selected triangle
+        int vertexIndex1 = mesh.triangles[randomTriangleIndex * 3];
+        int vertexIndex2 = mesh.triangles[randomTriangleIndex * 3 + 1];
+        int vertexIndex3 = mesh.triangles[randomTriangleIndex * 3 + 2];
 
-        // Calculate random barycentric coordinates within the triangle
-        float r1 = Random.Range(0f, 1f);
-        float r2 = Random.Range(0f, 1f);
+        // Get the positions of the vertices of the selected triangle
+        Vector3 vertex1 = mesh.vertices[vertexIndex1];
+        Vector3 vertex2 = mesh.vertices[vertexIndex2];
+        Vector3 vertex3 = mesh.vertices[vertexIndex3];
 
-        // Ensure that the random point is inside the triangle
-        if (r1 + r2 >= 1f)
+        // Generate random barycentric coordinates (u, v, w) within the triangle
+        float u = Random.value;
+        float v = Random.value;
+        while (u + v >= 1f) // Ensure that the sum of u, v, and w is less than or equal to 1
         {
-            r1 = 1f - r1;
-            r2 = 1f - r2;
+            u = Random.value;
+            v = Random.value;
         }
+        float w = 1 - u - v;
 
-        // Calculate the point on the triangle using barycentric coordinates
-        Vector3 spawnPosition = vertex0 + r1 * (vertex1 - vertex0) + r2 * (vertex2 - vertex0);
+        // Calculate the point within the triangle using barycentric coordinates
+        Vector3 spawnPosition = u * vertex1 + v * vertex2 + w * vertex3;
 
-        // Transform the point from local to world space
-        Vector3 spawnPositionWorld = transform.TransformPoint(spawnPosition);
+        // Transform the spawn position from local to world space
+        spawnPosition = transform.TransformPoint(spawnPosition);
 
-        return spawnPositionWorld;
+        return spawnPosition;
     }
 
     void SpawnRandomTree(Vector3 position, Quaternion rotation)
@@ -82,6 +96,9 @@ public class SpawnOnObject : MonoBehaviour
 
         // Apply the random scale factors to the tree instance
         treeInstance.transform.localScale *= scaleFactor;
+
+        // Set the parent of the spawned tree to the objectToSpawnUnder object
+        treeInstance.transform.parent = objectToSpawnUnder.transform;
     }
 
     GameObject SelectRandomTreePrefab()
