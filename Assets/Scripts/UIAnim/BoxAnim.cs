@@ -9,14 +9,11 @@ public class TextAnim : MonoBehaviour
     private Button boxButton;
     private Animator boxAnim;
 
-    [Header("Inside inputbox")]
+    [Header("Box parameters")]
     public GameObject closeBoxButton;
     public GameObject inputField;
-    //private Text text;
+    public float animationTime = 1;
 
-    //private Color color;
-
-    // Start is called before the first frame update
     void Start()
     {
         boxAnim = GetComponent<Animator>();
@@ -25,9 +22,6 @@ public class TextAnim : MonoBehaviour
         inputField.SetActive(false);
         closeBoxButton.SetActive(false);
 
-        //text.text = inputField.GetComponent<InputField>().text;
-
-        //color = Color.clear;
     }
 
     public void ExpandBox()
@@ -37,33 +31,25 @@ public class TextAnim : MonoBehaviour
         boxButton.enabled = false;
         inputField.SetActive(true);
 
+        SpindleHandler.openBox = true;
 
-
-
-
-
-
-        //text.DOColor(Color.black, 2);
-
-        inputField.transform.DOScale(1, 2).SetEase(Ease.OutSine);
+        inputField.transform.DOScale(1, animationTime).SetEase(Ease.OutSine);
     }
 
     public void CloseBox()
     {
-        boxButton.enabled = true;
         boxAnim.SetTrigger("CloseBox");
-        inputField.transform.DOScale(0, 2);
-
-        //text.DOColor(color, 2);
-
-        StartCoroutine(Wait());
+        inputField.transform.DOScale(0, animationTime);
+        StartCoroutine(WaitForAnimation());
     }
 
-    private IEnumerator Wait()
+    private IEnumerator WaitForAnimation()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(animationTime);
+        boxButton.enabled = true;
         closeBoxButton.SetActive(false);
         inputField.SetActive(false);
+        SpindleHandler.openBox = false;
 
 
         yield break;
