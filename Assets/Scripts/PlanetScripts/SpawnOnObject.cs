@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [System.Serializable]
 public class TreePrefabDensity
@@ -10,23 +11,41 @@ public class TreePrefabDensity
 
 public class SpawnOnObject : MonoBehaviour
 {
-    public Mesh mesh;
+    public GameObject objectToSpawnUnder; // Reference to the object to spawn trees under
     public int numberOfTreesToSpawn = 10; // Adjust this value to control the number of trees to spawn
     public TreePrefabDensity[] treePrefabs; // Array of tree prefabs with associated density percentages
     public float minTreeSize = 0.5f;
     public float maxTreeSize = 2f;
 
+    public GameObject HousePrefab;
+
+    public XPStats xpstats;
+
     void Start()
     {
         SpawnTrees();
+        
     }
 
-    void SpawnTrees()
+    public void SpawnTrees()
     {
+        if (objectToSpawnUnder == null)
+        {
+            Debug.LogError("Please assign the object to spawn trees under in the Inspector.");
+            return;
+        }
+
+        Mesh mesh = objectToSpawnUnder.GetComponent<MeshFilter>().sharedMesh;
+        if (mesh == null)
+        {
+            Debug.LogError("The selected object does not have a MeshFilter component.");
+            return;
+        }
+
         for (int i = 0; i < numberOfTreesToSpawn; i++)
         {
-            // Get a random point on the surface of each face of the mesh
-            Vector3 spawnPosition = RandomPointOnMeshFace(mesh);
+            // Get a random point within a triangle on the surface of the mesh
+            Vector3 spawnPosition = RandomPointInTriangle(mesh);
 
             // Get the rotation to orient the tree away from the center of the sphere
             Quaternion spawnRotation = Quaternion.FromToRotation(Vector3.up, spawnPosition.normalized);
@@ -36,52 +55,80 @@ public class SpawnOnObject : MonoBehaviour
         }
     }
 
-    Vector3 RandomPointOnMeshFace(Mesh mesh)
+    Vector3 RandomPointInTriangle(Mesh mesh)
     {
-        // Randomly select a triangle (face) from the mesh
-        int randomTriangleIndex = Random.Range(0, mesh.triangles.Length / 3); // Each triangle has 3 indices
+        // Randomly select a triangle index
+        int randomTriangleIndex = Random.Range(0, mesh.triangles.Length / 3); // Mesh.triangles contains vertex indices of triangles
 
-        // Get the vertices of the selected triangle
-        int index0 = mesh.triangles[randomTriangleIndex * 3];
-        int index1 = mesh.triangles[randomTriangleIndex * 3 + 1];
-        int index2 = mesh.triangles[randomTriangleIndex * 3 + 2];
-        Vector3 vertex0 = mesh.vertices[index0];
-        Vector3 vertex1 = mesh.vertices[index1];
-        Vector3 vertex2 = mesh.vertices[index2];
+        // Get the vertex indices of the selected triangle
+        int vertexIndex1 = mesh.triangles[randomTriangleIndex * 3];
+        int vertexIndex2 = mesh.triangles[randomTriangleIndex * 3 + 1];
+        int vertexIndex3 = mesh.triangles[randomTriangleIndex * 3 + 2];
 
-        // Calculate random barycentric coordinates within the triangle
-        float r1 = Random.Range(0f, 1f);
-        float r2 = Random.Range(0f, 1f);
+        // Get the positions of the vertices of the selected triangle
+        Vector3 vertex1 = mesh.vertices[vertexIndex1];
+        Vector3 vertex2 = mesh.vertices[vertexIndex2];
+        Vector3 vertex3 = mesh.vertices[vertexIndex3];
 
-        // Ensure that the random point is inside the triangle
-        if (r1 + r2 >= 1f)
-        {
-            r1 = 1f - r1;
-            r2 = 1f - r2;
-        }
+        // Calculate the center of the triangle
+        Vector3 triangleCenter = (vertex1 + vertex2 + vertex3) / 3f;
 
-        // Calculate the point on the triangle using barycentric coordinates
-        Vector3 spawnPosition = vertex0 + r1 * (vertex1 - vertex0) + r2 * (vertex2 - vertex0);
+        // Generate random barycentric coordinates (u, v, w) within the triangle
+        float u = Random.Range(0f, 1f);
+        float v = Random.Range(0f, 1f - u);
+        float w = 1 - u - v;
 
-        // Transform the point from local to world space
-        Vector3 spawnPositionWorld = transform.TransformPoint(spawnPosition);
+        // Calculate the point within the triangle using barycentric coordinates
+        Vector3 spawnPosition = u * vertex1 + v * vertex2 + w * vertex3;
 
-        return spawnPositionWorld;
+        // Move the spawn position towards the center of the triangle
+        float displacementFactor = 1f; // Adjust this value to control the displacement amount
+        spawnPosition = Vector3.Lerp(spawnPosition, triangleCenter, displacementFactor);
+
+        // Transform the spawn position from local to world space
+        spawnPosition = transform.TransformPoint(spawnPosition);
+
+        return spawnPosition;
     }
+
+
 
     void SpawnRandomTree(Vector3 position, Quaternion rotation)
     {
-        // Randomly select a tree prefab based on its density percentage
-        GameObject selectedPrefab = SelectRandomTreePrefab();
+        if (xpstats != null && xpstats.CurrentLevel == 5)
+        {
+            Debug.Log("Level 5 reached");
+            GameObject housePrefab = HousePrefab;
 
-        // Generate random scale factors for the tree within the specified range
-        float scaleFactor = Random.Range(minTreeSize, maxTreeSize);
+            // Generate random scale factors for the tree within the specified range
+            float scaleFactor = Random.Range(minTreeSize, maxTreeSize);
 
-        // Instantiate the randomly chosen tree prefab at the specified position with the calculated rotation
-        GameObject treeInstance = Instantiate(selectedPrefab, position, rotation);
+            // Instantiate the randomly chosen tree prefab at the specified position with the calculated rotation
+            GameObject treeInstance = Instantiate(housePrefab, position, rotation);
 
-        // Apply the random scale factors to the tree instance
-        treeInstance.transform.localScale *= scaleFactor;
+            // Apply the random scale factors to the tree instance
+            treeInstance.transform.localScale *= scaleFactor;
+
+            // Set the parent of the spawned tree to the objectToSpawnUnder object
+            treeInstance.transform.parent = objectToSpawnUnder.transform;
+        }
+        else
+        {
+            // Randomly select a tree prefab based on its density percentage
+            GameObject selectedPrefab = SelectRandomTreePrefab();
+
+            // Generate random scale factors for the tree within the specified range
+            float scaleFactor = Random.Range(minTreeSize, maxTreeSize);
+
+            // Instantiate the randomly chosen tree prefab at the specified position with the calculated rotation
+            GameObject treeInstance = Instantiate(selectedPrefab, position, rotation);
+
+            // Apply the random scale factors to the tree instance
+            treeInstance.transform.localScale *= scaleFactor;
+
+            // Set the parent of the spawned tree to the objectToSpawnUnder object
+            treeInstance.transform.parent = objectToSpawnUnder.transform;
+        }
     }
 
     GameObject SelectRandomTreePrefab()

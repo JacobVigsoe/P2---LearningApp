@@ -1,9 +1,24 @@
 fileFormatVersion: 2
-guid: c94a9f58733351e4ea7967fd1de8e8d0
+guid: af612da11ec2da941b74c1e362b0bef4
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: House_Cube.003_DarkWoordMat
+    second: {fileID: 2100000, guid: b9023d63b18750445b1be259ca46af4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: House_Cube.003_Material.001Mat
+    second: {fileID: 2100000, guid: 8511b16fbf7a72e448676ace43b85b31, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: House_Cube.003_glassMat
+    second: {fileID: 2100000, guid: 5deb92e27e975924d94830d415347ece, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -32,10 +47,10 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 1
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 0.1
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -90,7 +105,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 0.1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
