@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:ProgressBar value="22" title="my-progress" />
+        <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" />
+        <ui:Slider picking-mode="Ignore" label="Slider" value="42" high-value="100" name="Slider" />
+    </ui:VisualElement>
+    <ui:VisualElement style="flex-grow: 1;" />
+    <ui:TreeView focusable="true" />
+</ui:UXML>
