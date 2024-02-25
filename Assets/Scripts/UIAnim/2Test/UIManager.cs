@@ -13,10 +13,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private RectTransform noteMenu;
 
     [Header("Notes")]
-    [SerializeField] private GameObject note;
+    [SerializeField] private GameObject notePrefab;
     [SerializeField] private Vector2 notePosition;
+    [SerializeField] private GameObject closeButton;
 
-    private List<GameObject> notesList = new List<GameObject>();
+    public List<GameObject> notesList = new List<GameObject>();
+
+    public int currentNoteIndex = 0;
 
     private Vector2 origin;
 
@@ -34,6 +37,7 @@ public class UIManager : MonoBehaviour
     {
         mainMenu.DOAnchorPos(offsetleft, animationSpeed);
         noteMenu.DOAnchorPos(origin, animationSpeed);
+        closeButton.SetActive(false);
     }
 
     public void BackButton()
@@ -44,17 +48,22 @@ public class UIManager : MonoBehaviour
 
     public void NewNoteButton()
     {
-        Instantiate(note);
-        
-        RectTransform newNote = note.GetComponent<RectTransform>();
+        GameObject newNote = Instantiate(notePrefab) as GameObject;
+        notesList.Add(newNote);
+        newNote.name = "New Note " + notesList.Count;
+        newNote.transform.parent = noteMenu.transform;
 
-        newNote.SetParent(noteMenu, false);
+        RectTransform newNoteRectTransform = newNote.GetComponent<RectTransform>();
 
-        newNote.DOAnchorPos(offsetUp, animationSpeed);
-        newNote.DOAnchorPos(notePosition, animationSpeed);
-
-        
-        
+        newNoteRectTransform.DOAnchorPos(origin, animationSpeed);
     }
+
+    public void CloseNoteButton()
+    {
+        notesList[currentNoteIndex].GetComponent<Animator>().SetTrigger("CloseNote");
+        Debug.Log("Close Note");
+    }
+
+    /// Note index virker ikke ift at lukke noter
 
 }
