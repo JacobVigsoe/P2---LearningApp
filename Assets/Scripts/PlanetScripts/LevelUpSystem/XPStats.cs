@@ -6,17 +6,23 @@ public class XPStats : MonoBehaviour
 
     public SpawnOnObject spawnOnObjectScript; // Reference to the SpawnOnObject script
 
-    private void OnEnable()
+    private XPManager xpManager;
+
+    void Start()
     {
-        // Subscribe Event
-        XPManager.instance.OnExperienceChange += HandleExperienceChange;
+        // Get a reference to the XPManager instance in Start
+        xpManager = GetComponent<XPManager>();
+        if (xpManager != null)
+        {
+            xpManager.OnExperienceChange += HandleExperienceChange;
+        }
+        else
+        {
+            Debug.LogError("Could not find XPManager component.");
+        }
     }
 
-    private void OnDisable()
-    {
-        // Unsubscribing from event
-        XPManager.instance.OnExperienceChange -= HandleExperienceChange;
-    }
+
 
     private void HandleExperienceChange(int newExperience)
     {
