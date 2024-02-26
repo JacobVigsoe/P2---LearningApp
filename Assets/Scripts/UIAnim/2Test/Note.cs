@@ -23,5 +23,6 @@ public class Note : MonoBehaviour
     {
         UIManager.noteIsOpen = true;
         anim.SetTrigger("OpenNote");
+        // macel
     }
 }
