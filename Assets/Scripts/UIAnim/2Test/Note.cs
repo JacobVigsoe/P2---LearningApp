@@ -5,23 +5,20 @@ using UnityEngine;
 public class Note : MonoBehaviour
 {
     private Animator anim;
-    public GameObject closeButton;
-    private GameObject newNoteButton;
+    //private GameObject newNoteButton;
+    private UIManager UIManager;
 
     void Start()
     {
+        UIManager = GameObject.FindObjectOfType<UIManager>();
         anim = GetComponent<Animator>();
-        newNoteButton = GameObject.Find("NewNoteButton");
-        closeButton = GameObject.FindWithTag("CloseButton");
+        //newNoteButton = GameObject.Find("NewNoteButton");
     }
 
     public void OpenNote()
     {
-        newNoteButton.SetActive(false);
+        UIManager.noteIsOpen = true;
+        //newNoteButton.SetActive(false);
         anim.SetTrigger("OpenNote");
-        closeButton.SetActive(true);
     }
-
-
-    /// Close button vil finde reference til objektet og tænde for det
 }
