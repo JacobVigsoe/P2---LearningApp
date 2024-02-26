@@ -1,24 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Note : MonoBehaviour
 {
     private Animator anim;
-    //private GameObject newNoteButton;
     private UIManager UIManager;
+
+    private TextMeshProUGUI noteTitle;
 
     void Start()
     {
+        noteTitle = GetComponentInChildren<TextMeshProUGUI>();
         UIManager = GameObject.FindObjectOfType<UIManager>();
         anim = GetComponent<Animator>();
-        //newNoteButton = GameObject.Find("NewNoteButton");
+        
+        noteTitle.text = "Note " + UIManager.notesList.Count;
     }
 
     public void OpenNote()
     {
         UIManager.noteIsOpen = true;
-        //newNoteButton.SetActive(false);
         anim.SetTrigger("OpenNote");
     }
 }
