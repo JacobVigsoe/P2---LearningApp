@@ -1,23 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Note : MonoBehaviour
 {
     private Animator anim;
     private UIManager UIManager;
-    private bool isOpen;
-    private Button button;
-
+    private TextMeshProUGUI noteTitle;
 
     void Start()
     {
-        button = GetComponent<Button>();
+        noteTitle = GetComponentInChildren<TextMeshProUGUI>();
         UIManager = GameObject.FindObjectOfType<UIManager>();
         anim = GetComponent<Animator>();
+        
+        noteTitle.text = "Note " + UIManager.notesList.Count;
     }
 
     public void OpenNote()
@@ -25,12 +23,5 @@ public class Note : MonoBehaviour
         UIManager.noteIsOpen = true;
         anim.SetTrigger("OpenNote");
     }
-
-    void Update()
-    {
-        
-    }
-
-
     
 }
