@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.XR;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Note : MonoBehaviour
 {
@@ -11,7 +11,6 @@ public class Note : MonoBehaviour
     private UIManager UIManager;
     private TextMeshProUGUI noteTitle;
     private Button button;
-
     void Start()
     {
         button = GetComponent<Button>();
@@ -32,10 +31,8 @@ public class Note : MonoBehaviour
     {
         if (UIManager.noteIsOpen)
             button.interactable = false;
-        
         else
             button.interactable = true;
         
     }
-    
 }

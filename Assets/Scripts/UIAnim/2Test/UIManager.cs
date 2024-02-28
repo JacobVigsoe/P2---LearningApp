@@ -89,7 +89,6 @@ public class UIManager : MonoBehaviour
         notesList[currentNoteIndex].GetComponent<Animator>().SetTrigger("CloseNote");
         noteIsOpen = false;
         closeButton.DOAnchorPos(offsetDown, animationSpeed);
-        Debug.Log("Close Note");
     }
 
     public void NextNote()
