@@ -30,9 +30,9 @@ public class Note : MonoBehaviour
     void Update()
     {
         if (UIManager.noteIsOpen)
-            button.interactable = false;
+            button.enabled = false;
         else
-            button.interactable = true;
+            button.enabled = true;
         
     }
 }
