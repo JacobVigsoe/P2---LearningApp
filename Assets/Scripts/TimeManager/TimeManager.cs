@@ -12,6 +12,7 @@ public class Task
     public int hoursToComplete;
     public DateTime dueDate;
     public float remainingTimeSeconds; // New property to store remaining time
+    public float savedSliderValue; // New property to store saved slider value
 
     public Task(string _name, int _hoursToComplete, DateTime _dueDate)
     {
@@ -19,6 +20,7 @@ public class Task
         hoursToComplete = _hoursToComplete;
         dueDate = _dueDate;
         remainingTimeSeconds = CalculateRemainingTime(); // Initialize remaining time
+        savedSliderValue = CalculateSavedSliderValue();
     }
 
     // Method to calculate remaining time
@@ -27,7 +29,23 @@ public class Task
         TimeSpan timeRemaining = dueDate - DateTime.Now;
         return Mathf.Max((float)timeRemaining.TotalSeconds, 0f);
     }
+
+    // Method to update remaining time and saved slider value
+    public void UpdateRemainingTime()
+    {
+        remainingTimeSeconds = CalculateRemainingTime();
+        savedSliderValue = CalculateSavedSliderValue();
+    }
+
+
+    // Method to calculate saved slider value
+    public float CalculateSavedSliderValue()
+    {
+        // Calculate the slider value based on the remaining time and total hours to complete
+        return Mathf.Clamp01(remainingTimeSeconds / (hoursToComplete * 3600)); // Convert hours to seconds
+    }
 }
+
 
 
 public class TimeManager : MonoBehaviour
@@ -60,9 +78,9 @@ public class TimeManager : MonoBehaviour
 
     private void Start()
     {
-        LoadTasks();
-        Initialize();
         
+        Initialize();
+        LoadTasks();
         UpdateDateTime();
         StartTimer();
     }
@@ -111,14 +129,31 @@ public class TimeManager : MonoBehaviour
         Slider timerSlider = newTaskObject.GetComponentInChildren<Slider>();
         timerSlider.maxValue = hoursToComplete;
 
+        // Get the saved slider value for this task
+        float savedSliderValue = GetSavedSliderValue(taskName);
+
+        // Calculate remaining time
         float remainingTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
-        StartCoroutine(CountdownTask(timerSlider, dueDate, remainingTimeSeconds));
+
+        // Start the countdown coroutine with the correct remaining time and saved slider value
+        StartCoroutine(CountdownTask(timerSlider, dueDate, remainingTimeSeconds, savedSliderValue));
 
         taskNameInput.text = "";
         hoursToCompleteInput.text = "";
 
         SaveTasks();
     }
+
+    private float GetSavedSliderValue(string taskName)
+    {
+        // Retrieve the saved slider value from PlayerPrefs using the task's name
+        if (PlayerPrefs.HasKey(taskName + "_SliderValue"))
+        {
+            return PlayerPrefs.GetFloat(taskName + "_SliderValue");
+        }
+        return 0f; // Return 0 if the saved slider value doesn't exist
+    }
+
 
     public void RemoveTask(int index)
     {
@@ -134,18 +169,22 @@ public class TimeManager : MonoBehaviour
         // Iterate through each task and add its information to the list
         foreach (Task task in tasks)
         {
-            // Calculate remaining time until due date
-            float remainingTimeSeconds = Mathf.Max((float)(task.dueDate - DateTime.Now).TotalSeconds, 0f);
+            // Update the remaining time for the task
+            task.UpdateRemainingTime();
 
             // Get the slider value from the task's slider component
             Slider timerSlider = FindSliderForTask(task);
             float sliderValue = timerSlider != null ? timerSlider.value : 0f;
 
             // Concatenate the task information with remaining time and slider value using '|' as delimiter
-            string taskInfo = $"{task.name}|{task.hoursToComplete}|{remainingTimeSeconds}|{sliderValue}";
+            string taskInfo = $"{task.name}|{task.hoursToComplete}|{task.remainingTimeSeconds}|{sliderValue}|{task.savedSliderValue}";
 
             // Add the task information to the list
             taskInfos.Add(taskInfo);
+
+            // Save the slider value for this task separately
+            PlayerPrefs.SetFloat(task.name + "_SliderValue", sliderValue);
+            PlayerPrefs.SetFloat(task.name + "_SavedSliderValue", task.savedSliderValue);
         }
 
         // Convert the list of task information to a single string separated by comma
@@ -158,30 +197,12 @@ public class TimeManager : MonoBehaviour
         Debug.Log("Task information saved: " + taskInfosString);
     }
 
+
+
+
     private void OnApplicationQuit()
     {
-        SaveRemainingTime(); // Save remaining time for tasks
-    }
-
-    private void SaveRemainingTime()
-    {
-        foreach (Task task in tasks)
-        {
-            // Calculate the remaining time until the due date
-            TimeSpan timeRemaining = task.dueDate - DateTime.Now;
-            float remainingTimeSeconds = Mathf.Max((float)timeRemaining.TotalSeconds, 0f);
-
-            // Find the slider associated with the task
-            Slider timerSlider = FindSliderForTask(task);
-            if (timerSlider != null)
-            {
-                // Save the remaining time in PlayerPrefs
-                PlayerPrefs.SetFloat(task.name + "_RemainingTime", task.remainingTimeSeconds);
-                Debug.Log($"Remaining time saved for task '{task.name}': {remainingTimeSeconds} seconds");
-            }
-        }
-        PlayerPrefs.Save(); // Save PlayerPrefs
-        Debug.Log("All remaining times saved.");
+        SaveTasks(); // Save remaining time for tasks
     }
 
 
@@ -218,12 +239,13 @@ public class TimeManager : MonoBehaviour
             // Create new Task objects with the loaded task information
             foreach (string taskInfo in taskInfos)
             {
-                // Split the task information into name, hoursToComplete, remainingTime, and sliderValue using '|' as delimiter
+                // Split the task information into name, hoursToComplete, remainingTime, sliderValue, and savedSliderValue using '|' as delimiter
                 string[] info = taskInfo.Split('|');
                 string taskName = info[0];
                 int hoursToComplete = int.Parse(info[1]);
                 float remainingTimeSeconds = float.Parse(info[2]);
                 float sliderValue = float.Parse(info[3]);
+                float savedSliderValue = float.Parse(info[4]);
 
                 // Calculate due date based on remaining time
                 DateTime dueDate = DateTime.Now.AddSeconds(remainingTimeSeconds);
@@ -231,6 +253,11 @@ public class TimeManager : MonoBehaviour
                 // Create a new Task object and add it to the tasks list
                 Task task = new Task(taskName, hoursToComplete, dueDate);
                 task.remainingTimeSeconds = remainingTimeSeconds; // Update remaining time
+                task.savedSliderValue = savedSliderValue; // Assign saved slider value
+
+                // Set the saved slider value back to the task
+                task.savedSliderValue = PlayerPrefs.GetFloat(taskName + "_SavedSliderValue", sliderValue);
+
                 tasks.Add(task);
             }
 
@@ -238,11 +265,6 @@ public class TimeManager : MonoBehaviour
             RecreateTaskPrefabs();
         }
     }
-
-
-
-
-
 
 
     private void RecreateTaskPrefabs()
@@ -260,30 +282,49 @@ public class TimeManager : MonoBehaviour
             GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, tasksParent);
             TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
             newTaskPrefab.SetTaskInfo(task.name);
-            Slider timerSlider = newTaskObject.GetComponentInChildren<Slider>();
-            timerSlider.maxValue = task.hoursToComplete;
-            float remainingTimeSeconds = (float)(task.dueDate - DateTime.Now).TotalSeconds;
-            StartCoroutine(CountdownTask(timerSlider, task.dueDate, remainingTimeSeconds));
+
+            // Get the slider component inside the task prefab
+            Slider timerSlider = newTaskPrefab.GetComponentInChildren<Slider>();
+            if (timerSlider != null)
+            {
+                // Set the max value of the slider
+                timerSlider.maxValue = task.hoursToComplete;
+                // Set the slider value to the saved value
+                timerSlider.value = task.savedSliderValue;
+            }
+
+            // Start the countdown coroutine with the correct remaining time and saved slider value
+            StartCoroutine(CountdownTask(timerSlider, task.dueDate, task.remainingTimeSeconds, task.savedSliderValue));
         }
     }
 
-    private IEnumerator CountdownTask(Slider timerSlider, DateTime dueDate, float remainingTimeSeconds)
+
+
+    private IEnumerator CountdownTask(Slider timerSlider, DateTime dueDate, float remainingTimeSeconds, float savedSliderValue)
     {
         float totalTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
 
-        float initialSliderValue = Mathf.Clamp01(remainingTimeSeconds / totalTimeSeconds) * timerSlider.maxValue;
-        timerSlider.value = initialSliderValue;
+        // Set the initial slider value to the saved value
+        timerSlider.value = savedSliderValue;
 
         while (DateTime.Now < dueDate)
         {
-            float elapsedTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
-            float sliderValue = Mathf.Clamp01(elapsedTimeSeconds / totalTimeSeconds) * timerSlider.maxValue;
+            // Update the remaining time
+            remainingTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
+
+            // Calculate the slider value based on the remaining time and the total time
+            float sliderValue = Mathf.Clamp01(remainingTimeSeconds / totalTimeSeconds) * timerSlider.maxValue;
+
+            // Set the slider value
             timerSlider.value = sliderValue;
+
             yield return null;
         }
-
-
     }
+
+
+
+
 
 
     private void UpdateTimer()
