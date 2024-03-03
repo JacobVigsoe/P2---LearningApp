@@ -10,15 +10,25 @@ public class Task
 {
     public string name;
     public int hoursToComplete;
-    public DateTime dueDate; // Add a field for the due date
+    public DateTime dueDate;
+    public float remainingTimeSeconds; // New property to store remaining time
 
     public Task(string _name, int _hoursToComplete, DateTime _dueDate)
     {
         name = _name;
         hoursToComplete = _hoursToComplete;
         dueDate = _dueDate;
+        remainingTimeSeconds = CalculateRemainingTime(); // Initialize remaining time
+    }
+
+    // Method to calculate remaining time
+    public float CalculateRemainingTime()
+    {
+        TimeSpan timeRemaining = dueDate - DateTime.Now;
+        return Mathf.Max((float)timeRemaining.TotalSeconds, 0f);
     }
 }
+
 
 public class TimeManager : MonoBehaviour
 {
@@ -37,26 +47,27 @@ public class TimeManager : MonoBehaviour
     public TMP_InputField taskNameInput;
     public TMP_InputField hoursToCompleteInput;
 
-    public GameObject taskPrefab; // Reference to the task prefab
-    public Transform tasksParent; // Parent transform to instantiate tasks under
-    public Vector2 gridCellSize = new Vector2(200, 100); // Size of each grid cell
-    public Vector2 gridSpacing = new Vector2(20, 20); // Spacing between grid cells
-    public Vector3 spawnOffset = new Vector3(0, 0, 0); // Offset for spawning position relative to tasksParent
+    public GameObject taskPrefab;
+    public Transform tasksParent;
+    public Vector2 gridCellSize = new Vector2(200, 100);
+    public Vector2 gridSpacing = new Vector2(20, 20);
+    public Vector3 spawnOffset = new Vector3(0, 0, 0);
+    public Color gizmoColor = Color.blue;
+    public int maxColumns = 3;
+    public Scrollbar hoursToCompleteScrollbar;
 
-    public Color gizmoColor = Color.blue; // Color of the grid cell gizmos
+    private const string TaskInfosKey = "TaskInfos";
 
-    public int maxColumns = 3; // Maximum number of columns in the grid
-
-    public Scrollbar hoursToCompleteScrollbar; // Reference to the scrollbar for hours to complete
-
-    void Start()
+    private void Start()
     {
+        LoadTasks();
         Initialize();
+        
         UpdateDateTime();
         StartTimer();
     }
 
-    void Update()
+    private void Update()
     {
         if (isRunning)
         {
@@ -83,36 +94,197 @@ public class TimeManager : MonoBehaviour
     public void AddTask()
     {
         string taskName = taskNameInput.text;
-        int hoursToComplete = Mathf.RoundToInt(hoursToCompleteScrollbar.value * 24); // Convert scroll value to hours
-        // Calculate due date based on current time and hours to complete
+        int hoursToComplete = Mathf.RoundToInt(hoursToCompleteScrollbar.value * 24);
         DateTime dueDate = DateTime.Now.AddHours(hoursToComplete);
 
         tasks.Add(new Task(taskName, hoursToComplete, dueDate));
 
-        // Calculate grid position for the new task
         int rowIndex = (tasks.Count - 1) / maxColumns;
         int columnIndex = (tasks.Count - 1) % maxColumns;
 
-        // Calculate the position for the new task
         Vector3 taskPosition = tasksParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
 
-        // Create and instantiate a new task prefab
         GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, tasksParent);
         TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
         newTaskPrefab.SetTaskInfo(taskName);
 
-        // Get the slider component from the task prefab
-
         Slider timerSlider = newTaskObject.GetComponentInChildren<Slider>();
         timerSlider.maxValue = hoursToComplete;
 
-        // Start countdown coroutine for the newly added task
-        StartCoroutine(CountdownTask(timerSlider, dueDate));
+        float remainingTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
+        StartCoroutine(CountdownTask(timerSlider, dueDate, remainingTimeSeconds));
 
-        // Optionally, you can save the tasks to PlayerPrefs, a file, or a database here
-        taskNameInput.text = ""; // Clear input fields after adding task
+        taskNameInput.text = "";
         hoursToCompleteInput.text = "";
+
+        SaveTasks();
     }
+
+    public void RemoveTask(int index)
+    {
+        tasks.RemoveAt(index);
+        SaveTasks();
+    }
+
+    public void SaveTasks()
+    {
+        // Create a list to store task information (name, hoursToComplete, remainingTime, sliderValue)
+        List<string> taskInfos = new List<string>();
+
+        // Iterate through each task and add its information to the list
+        foreach (Task task in tasks)
+        {
+            // Calculate remaining time until due date
+            float remainingTimeSeconds = Mathf.Max((float)(task.dueDate - DateTime.Now).TotalSeconds, 0f);
+
+            // Get the slider value from the task's slider component
+            Slider timerSlider = FindSliderForTask(task);
+            float sliderValue = timerSlider != null ? timerSlider.value : 0f;
+
+            // Concatenate the task information with remaining time and slider value using '|' as delimiter
+            string taskInfo = $"{task.name}|{task.hoursToComplete}|{remainingTimeSeconds}|{sliderValue}";
+
+            // Add the task information to the list
+            taskInfos.Add(taskInfo);
+        }
+
+        // Convert the list of task information to a single string separated by comma
+        string taskInfosString = string.Join(",", taskInfos);
+
+        // Save the task information string to PlayerPrefs
+        PlayerPrefs.SetString("TaskInfos", taskInfosString);
+        PlayerPrefs.Save();
+
+        Debug.Log("Task information saved: " + taskInfosString);
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveRemainingTime(); // Save remaining time for tasks
+    }
+
+    private void SaveRemainingTime()
+    {
+        foreach (Task task in tasks)
+        {
+            // Calculate the remaining time until the due date
+            TimeSpan timeRemaining = task.dueDate - DateTime.Now;
+            float remainingTimeSeconds = Mathf.Max((float)timeRemaining.TotalSeconds, 0f);
+
+            // Find the slider associated with the task
+            Slider timerSlider = FindSliderForTask(task);
+            if (timerSlider != null)
+            {
+                // Save the remaining time in PlayerPrefs
+                PlayerPrefs.SetFloat(task.name + "_RemainingTime", task.remainingTimeSeconds);
+                Debug.Log($"Remaining time saved for task '{task.name}': {remainingTimeSeconds} seconds");
+            }
+        }
+        PlayerPrefs.Save(); // Save PlayerPrefs
+        Debug.Log("All remaining times saved.");
+    }
+
+
+
+    private Slider FindSliderForTask(Task task)
+    {
+        foreach (Transform child in tasksParent)
+        {
+            TaskPrefab taskPrefab = child.GetComponent<TaskPrefab>();
+            if (taskPrefab != null && taskPrefab.TaskName == task.name)
+            {
+                Slider timerSlider = child.GetComponentInChildren<Slider>();
+                return timerSlider;
+            }
+        }
+        return null;
+    }
+
+
+    public void LoadTasks()
+    {
+        // Check if the TaskInfos key exists in PlayerPrefs
+        if (PlayerPrefs.HasKey("TaskInfos"))
+        {
+            // Retrieve the task information string from PlayerPrefs
+            string taskInfosString = PlayerPrefs.GetString("TaskInfos");
+
+            // Split the task information string into an array using comma as delimiter
+            string[] taskInfos = taskInfosString.Split(',');
+
+            // Clear the existing tasks list
+            tasks.Clear();
+
+            // Create new Task objects with the loaded task information
+            foreach (string taskInfo in taskInfos)
+            {
+                // Split the task information into name, hoursToComplete, remainingTime, and sliderValue using '|' as delimiter
+                string[] info = taskInfo.Split('|');
+                string taskName = info[0];
+                int hoursToComplete = int.Parse(info[1]);
+                float remainingTimeSeconds = float.Parse(info[2]);
+                float sliderValue = float.Parse(info[3]);
+
+                // Calculate due date based on remaining time
+                DateTime dueDate = DateTime.Now.AddSeconds(remainingTimeSeconds);
+
+                // Create a new Task object and add it to the tasks list
+                Task task = new Task(taskName, hoursToComplete, dueDate);
+                task.remainingTimeSeconds = remainingTimeSeconds; // Update remaining time
+                tasks.Add(task);
+            }
+
+            // After loading tasks, recreate prefabs for each task
+            RecreateTaskPrefabs();
+        }
+    }
+
+
+
+
+
+
+
+    private void RecreateTaskPrefabs()
+    {
+        foreach (Transform child in tasksParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (Task task in tasks)
+        {
+            int rowIndex = (tasks.Count - 1) / maxColumns;
+            int columnIndex = (tasks.Count - 1) % maxColumns;
+            Vector3 taskPosition = tasksParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
+            GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, tasksParent);
+            TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
+            newTaskPrefab.SetTaskInfo(task.name);
+            Slider timerSlider = newTaskObject.GetComponentInChildren<Slider>();
+            timerSlider.maxValue = task.hoursToComplete;
+            float remainingTimeSeconds = (float)(task.dueDate - DateTime.Now).TotalSeconds;
+            StartCoroutine(CountdownTask(timerSlider, task.dueDate, remainingTimeSeconds));
+        }
+    }
+
+    private IEnumerator CountdownTask(Slider timerSlider, DateTime dueDate, float remainingTimeSeconds)
+    {
+        float totalTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
+
+        float initialSliderValue = Mathf.Clamp01(remainingTimeSeconds / totalTimeSeconds) * timerSlider.maxValue;
+        timerSlider.value = initialSliderValue;
+
+        while (DateTime.Now < dueDate)
+        {
+            float elapsedTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
+            float sliderValue = Mathf.Clamp01(elapsedTimeSeconds / totalTimeSeconds) * timerSlider.maxValue;
+            timerSlider.value = sliderValue;
+            yield return null;
+        }
+
+
+    }
+
 
     private void UpdateTimer()
     {
@@ -149,48 +321,6 @@ public class TimeManager : MonoBehaviour
         {
             float fillAmount = (float)(elapsedWeekTime.TotalSeconds / weekDuration.TotalSeconds);
             weekSlider.value = fillAmount;
-        }
-    }
-    IEnumerator CountdownTask(Slider timerSlider, DateTime dueDate)
-    {
-        // Calculate the total time allowed for the task in seconds
-        float totalTimeSeconds = (float)(dueDate - DateTime.Now).TotalHours * 3600f;
-
-        while (DateTime.Now < dueDate)
-        {
-            // Calculate remaining time until due date
-            TimeSpan remainingTime = dueDate - DateTime.Now;
-
-            // Calculate the elapsed time since the task's due date in seconds
-            float elapsedTimeSeconds = (float)(totalTimeSeconds - remainingTime.TotalHours * 3600f);
-
-            // Calculate the slider value based on the elapsed time
-            float sliderValue = Mathf.Lerp(timerSlider.maxValue, 0f, elapsedTimeSeconds / totalTimeSeconds);
-            timerSlider.value = sliderValue;
-
-            yield return null; // Wait for the next frame
-        }
-
-        // Optionally, you can handle task completion here
-    }
-
-
-
-
-
-
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = gizmoColor;
-        Vector3 parentPosition = tasksParent.position + spawnOffset;
-        for (int row = 0; row < tasks.Count / maxColumns + 1; row++)
-        {
-            for (int col = 0; col < maxColumns; col++)
-            {
-                Vector3 cellCenter = parentPosition + new Vector3(col * (gridCellSize.x + gridSpacing.x) + gridCellSize.x / 2, -row * (gridCellSize.y + gridSpacing.y) - gridCellSize.y / 2, 0);
-                Gizmos.DrawWireCube(cellCenter, new Vector3(gridCellSize.x, gridCellSize.y, 0));
-            }
         }
     }
 }
