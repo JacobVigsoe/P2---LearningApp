@@ -299,31 +299,38 @@ public class TimeManager : MonoBehaviour
     }
 
 
-
     private IEnumerator CountdownTask(Slider timerSlider, DateTime dueDate, float remainingTimeSeconds, float savedSliderValue)
     {
-        float totalTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
-
-        // Set the initial slider value to the saved value
-        timerSlider.value = savedSliderValue;
-
-        while (DateTime.Now < dueDate)
+        // Check if the timer has already started
+        if (DateTime.Now < dueDate)
         {
-            // Update the remaining time
-            remainingTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
+            // Calculate the total time remaining
+            float totalTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
 
-            // Calculate the slider value based on the remaining time and the total time
-            float sliderValue = Mathf.Clamp01(remainingTimeSeconds / totalTimeSeconds) * timerSlider.maxValue;
+            // Set the initial slider value to the saved value
+            timerSlider.value = savedSliderValue;
 
-            // Set the slider value
-            timerSlider.value = sliderValue;
+            // Start the countdown from the saved slider value
+            while (DateTime.Now < dueDate)
+            {
+                // Update the remaining time
+                remainingTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
 
-            yield return null;
+                // Calculate the slider value based on the remaining time and the total time
+                float sliderValue = Mathf.Clamp01(remainingTimeSeconds / totalTimeSeconds) * timerSlider.maxValue;
+
+                // Set the slider value
+                timerSlider.value = savedSliderValue;
+
+                yield return null;
+            }
+        }
+        else
+        {
+            // If the timer has already ended, set the slider value to its maximum
+            timerSlider.value = timerSlider.maxValue;
         }
     }
-
-
-
 
 
 
