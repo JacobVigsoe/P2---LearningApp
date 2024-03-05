@@ -11,8 +11,12 @@ public class Note : MonoBehaviour
     private UIManager UIManager;
     private TextMeshProUGUI noteTitle;
     private Button button;
+    private SoundManager soundManager;
+
+    
     void Start()
     {
+        soundManager = GameObject.FindObjectOfType<SoundManager>();
         button = GetComponent<Button>();
         noteTitle = GetComponentInChildren<TextMeshProUGUI>();
         UIManager = GameObject.FindObjectOfType<UIManager>();
@@ -23,6 +27,7 @@ public class Note : MonoBehaviour
 
     public void OpenNote()
     {
+        soundManager.PlayButtonSound();
         UIManager.noteIsOpen = true;
         anim.SetTrigger("OpenNote");
     }

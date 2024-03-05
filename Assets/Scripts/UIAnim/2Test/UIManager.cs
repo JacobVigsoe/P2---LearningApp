@@ -22,8 +22,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private RectTransform closeButton;
     [SerializeField] private GameObject nextNoteButton;
 
-
-
     // Offsets and positions
     private Vector2 origin = new Vector2(0, 0);
     private Vector2 offsetleft = new Vector2(-1440, 0);
@@ -103,5 +101,7 @@ public class UIManager : MonoBehaviour
         
         notesList[currentNoteIndex].SetActive(true);
     }
-
 }
+
+
+
