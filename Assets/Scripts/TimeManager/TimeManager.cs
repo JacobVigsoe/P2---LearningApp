@@ -231,14 +231,24 @@ public class TimeManager : MonoBehaviour
 
             tasks.Clear();
 
+            Debug.Log("Loading tasks...");
+
             foreach (string taskInfo in taskInfos)
             {
+                Debug.Log("Task info: " + taskInfo);
+
                 string[] info = taskInfo.Split('|');
                 string taskName = info[0];
                 int hoursToComplete = int.Parse(info[1]);
                 float remainingTimeSeconds = float.Parse(info[2]);
                 float sliderValue = float.Parse(info[3]);
                 float savedSliderValue = float.Parse(info[4]); // Retrieve saved slider value
+
+                Debug.Log("Task name: " + taskName);
+                Debug.Log("Hours to complete: " + hoursToComplete);
+                Debug.Log("Remaining time seconds: " + remainingTimeSeconds);
+                Debug.Log("Slider value: " + sliderValue);
+                Debug.Log("Saved slider value: " + savedSliderValue);
 
                 DateTime dueDate = DateTime.Now.AddSeconds(remainingTimeSeconds);
                 Task task = new Task(taskName, hoursToComplete, dueDate);
@@ -259,6 +269,7 @@ public class TimeManager : MonoBehaviour
             RecreateTaskPrefabs();
         }
     }
+
 
 
     private void RecreateTaskPrefabs()
