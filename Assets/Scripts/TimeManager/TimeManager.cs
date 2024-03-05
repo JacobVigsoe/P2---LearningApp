@@ -176,7 +176,7 @@ public class TimeManager : MonoBehaviour
             float sliderValue = timerSlider != null ? timerSlider.value : 0f;
 
             // Concatenate the task information with remaining time and slider value using '|' as delimiter
-            string taskInfo = $"{task.name}|{task.hoursToComplete}|{task.remainingTimeSeconds}|{sliderValue}|{task.savedSliderValue}";
+            string taskInfo = $"{task.name}|{task.hoursToComplete}|{task.remainingTimeSeconds.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{sliderValue.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{task.savedSliderValue.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}";
 
             // Add the task information to the list
             taskInfos.Add(taskInfo);
@@ -240,9 +240,9 @@ public class TimeManager : MonoBehaviour
                 string[] info = taskInfo.Split('|');
                 string taskName = info[0];
                 int hoursToComplete = int.Parse(info[1]);
-                float remainingTimeSeconds = float.Parse(info[2]);
-                float sliderValue = float.Parse(info[3]);
-                float savedSliderValue = float.Parse(info[4]); // Retrieve saved slider value
+                float remainingTimeSeconds = float.Parse(info[2].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
+                float sliderValue = float.Parse(info[3].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
+                float savedSliderValue = float.Parse(info[4].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
 
                 Debug.Log("Task name: " + taskName);
                 Debug.Log("Hours to complete: " + hoursToComplete);
