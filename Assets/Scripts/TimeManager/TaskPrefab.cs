@@ -12,5 +12,5 @@ public class TaskPrefab : MonoBehaviour
     {
         TaskName = taskName; // Store the task name
         taskNameText.text = taskName;
-    }
+    } 
 }

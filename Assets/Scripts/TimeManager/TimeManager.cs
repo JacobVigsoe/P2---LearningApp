@@ -202,7 +202,6 @@ public class TimeManager : MonoBehaviour
     }
 
 
-
     private Slider FindSliderForTask(Task task)
     {
         foreach (Transform child in tasksParent)
