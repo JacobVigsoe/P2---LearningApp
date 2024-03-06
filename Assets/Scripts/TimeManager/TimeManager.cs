@@ -289,7 +289,7 @@ public class TimeManager : MonoBehaviour
                     StartCoroutine(CountdownTask(task, savedSliderValue));
                 }
             }
-            
+
             RecreateTaskPrefabs();
         }
     }
