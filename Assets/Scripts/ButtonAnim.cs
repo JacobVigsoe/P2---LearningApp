@@ -4,8 +4,9 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
-[RequireComponent(typeof(Button))]
+
 public class ButtonAnim : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     private bool isPressed = false;
@@ -16,6 +17,7 @@ public class ButtonAnim : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         originalScale = transform.localScale;
         pressedScale = originalScale * 0.8f;
+
     }
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -30,4 +32,6 @@ public class ButtonAnim : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             isPressed = false;
         }
     }
+
+
 }

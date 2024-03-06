@@ -17,6 +17,8 @@ public class SpawnOnObject : MonoBehaviour
     public float minTreeSize = 0.5f;
     public float maxTreeSize = 2f;
 
+    public GameObject alignmentReferenceObject; // Reference object for alignment
+
     public GameObject HousePrefab;
 
     public XPStats xpstats;
@@ -47,13 +49,24 @@ public class SpawnOnObject : MonoBehaviour
             // Get a random point within a triangle on the surface of the mesh
             Vector3 spawnPosition = RandomPointInTriangle(mesh);
 
-            // Get the rotation to orient the tree away from the center of the sphere
-            Quaternion spawnRotation = Quaternion.FromToRotation(Vector3.up, spawnPosition.normalized);
+            // Calculate the rotation to orient the tree relative to the alignment object
+            Quaternion spawnRotation;
+            if (alignmentReferenceObject != null)
+            {
+                Vector3 direction = spawnPosition - alignmentReferenceObject.transform.position;
+                spawnRotation = Quaternion.FromToRotation(Vector3.up, direction.normalized);
+            }
+            else
+            {
+                // If no alignment object is specified, orient the tree away from the center of the sphere
+                spawnRotation = Quaternion.FromToRotation(Vector3.up, spawnPosition.normalized);
+            }
 
             // Spawn a random tree at the generated position with the calculated rotation
             SpawnRandomTree(spawnPosition, spawnRotation);
         }
     }
+
 
     Vector3 RandomPointInTriangle(Mesh mesh)
     {
@@ -85,11 +98,16 @@ public class SpawnOnObject : MonoBehaviour
         float displacementFactor = 1f; // Adjust this value to control the displacement amount
         spawnPosition = Vector3.Lerp(spawnPosition, triangleCenter, displacementFactor);
 
-        // Transform the spawn position from local to world space
-        spawnPosition = transform.TransformPoint(spawnPosition);
+        // Transform the spawn position relative to the reference object's zero position
+        if (alignmentReferenceObject != null)
+        {
+            spawnPosition = alignmentReferenceObject.transform.TransformPoint(spawnPosition);
+        }
 
         return spawnPosition;
     }
+
+
 
 
 

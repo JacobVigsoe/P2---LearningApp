@@ -80,6 +80,11 @@ public class TimeManager : MonoBehaviour
 
     private void Start()
     {
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
         TaskPrefab.TaskDeleteEvent += OnTaskDelete; // Subscribe to the task delete event
         UpdateDateTime();
         StartTimer();
@@ -289,7 +294,7 @@ public class TimeManager : MonoBehaviour
                     StartCoroutine(CountdownTask(task, savedSliderValue));
                 }
             }
-
+            
             RecreateTaskPrefabs();
         }
     }
