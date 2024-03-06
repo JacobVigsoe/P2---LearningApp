@@ -37,13 +37,15 @@ public class Task
         savedSliderValue = CalculateSavedSliderValue();
     }
 
-
     // Method to calculate saved slider value
     public float CalculateSavedSliderValue()
     {
         // Calculate the slider value based on the remaining time and total hours to complete
-        return Mathf.Clamp01(remainingTimeSeconds / (hoursToComplete * 3600)); // Convert hours to seconds
+        float totalHoursInSeconds = hoursToComplete * 3600; // Convert hours to seconds
+        return remainingTimeSeconds / totalHoursInSeconds;
     }
+
+
 }
 
 
@@ -52,7 +54,7 @@ public class TimeManager : MonoBehaviour
 {
     private DateTime currentTime;
     private DateTime startOfWeek;
-    private TimeSpan weekDuration;
+    private TimeSpan dayDuration;
     private TimeSpan elapsedWeekTime;
     private bool isRunning = false;
 
@@ -78,11 +80,11 @@ public class TimeManager : MonoBehaviour
 
     private void Start()
     {
+        TaskPrefab.TaskDeleteEvent += OnTaskDelete; // Subscribe to the task delete event
         UpdateDateTime();
         StartTimer();
         LoadTasks();
         Initialize();
-        
 
     }
 
@@ -93,7 +95,27 @@ public class TimeManager : MonoBehaviour
             UpdateTimer();
         }
     }
+    private void OnTaskDelete(string taskName)
+    {
+        // Find the task with the given name and remove it from the list
+        Task taskToRemove = tasks.Find(task => task.name == taskName);
+        if (taskToRemove != null)
+        {
+            tasks.Remove(taskToRemove);
+            SaveTasks(); // Save tasks after removing the task
+        }
 
+        // Destroy the corresponding TaskPrefab GameObject
+        foreach (Transform child in tasksParent)
+        {
+            TaskPrefab taskPrefab = child.GetComponent<TaskPrefab>();
+            if (taskPrefab != null && taskPrefab.TaskName == taskName)
+            {
+                Destroy(child.gameObject);
+                break; // Break out of the loop once the TaskPrefab is found and destroyed
+            }
+        }
+    }
     public void StartTimer()
     {
         isRunning = true;
@@ -143,6 +165,7 @@ public class TimeManager : MonoBehaviour
         hoursToCompleteInput.text = "";
 
         SaveTasks();
+
     }
 
     private float GetSavedSliderValue(string taskName)
@@ -222,6 +245,7 @@ public class TimeManager : MonoBehaviour
 
 
 
+
     public void LoadTasks()
     {
         if (PlayerPrefs.HasKey("TaskInfos"))
@@ -274,6 +298,7 @@ public class TimeManager : MonoBehaviour
 
     private void RecreateTaskPrefabs()
     {
+
         foreach (Transform child in tasksParent)
         {
             Destroy(child.gameObject);
@@ -361,9 +386,6 @@ public class TimeManager : MonoBehaviour
     }
 
 
-
-
-
     private void UpdateTimer()
     {
         UpdateDateTime();
@@ -373,7 +395,7 @@ public class TimeManager : MonoBehaviour
     private void Initialize()
     {
         startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
-        weekDuration = TimeSpan.FromDays(7);
+        dayDuration = TimeSpan.FromHours(24);
         elapsedWeekTime = TimeSpan.Zero;
     }
 
@@ -397,7 +419,7 @@ public class TimeManager : MonoBehaviour
 
         if (weekSlider != null)
         {
-            float fillAmount = (float)(elapsedWeekTime.TotalSeconds / weekDuration.TotalSeconds);
+            float fillAmount = (float)(elapsedWeekTime.TotalSeconds / dayDuration.TotalSeconds);
             weekSlider.value = fillAmount;
         }
     }
