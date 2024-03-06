@@ -72,13 +72,15 @@ public class UIManager : MonoBehaviour
         // Jump to the end of the list
         currentNoteIndex = notesList.Count;
 
+
+
         // Create a new note
         GameObject newNote = Instantiate(notePrefab) as GameObject;
         notesList.Add(newNote);
         newNote.name = "New Note " + notesList.Count;
         newNote.transform.SetParent(noteMenu.transform, false);
         RectTransform newNoteRectTransform = newNote.GetComponent<RectTransform>();
-        newNoteRectTransform.DOAnchorPos(origin, animationSpeed);
+        newNoteRectTransform.DOScale(0.8f, animationSpeed);
         noteIsOpen = false;
     }
 

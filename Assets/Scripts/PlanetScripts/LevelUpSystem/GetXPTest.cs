@@ -11,7 +11,7 @@ public class GetXPTest : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             XPManager.instance.AddExperience(XPAmount);
-            Debug.Log("Pressed button");
+            //Debug.Log("Pressed button");
         }
     }
 }
