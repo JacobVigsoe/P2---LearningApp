@@ -95,6 +95,7 @@ public class TimeManager : MonoBehaviour
         }
     }
 
+
     private void OnTaskDelete(string taskName)
     {
         // Find the task with the given name and remove it from the list

@@ -2163,13 +2163,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aabaffad05b137e4cb18c485de7eeb53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  task:
-    name: 
-    hoursToComplete: 0
-    remainingTimeSeconds: 0
-    savedSliderValue: 0
-  timeManager: {fileID: 1980722362}
-  taskTimerText: {fileID: 609815993}
 --- !u!1 &709589070
 GameObject:
   m_ObjectHideFlags: 0
