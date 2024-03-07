@@ -15,6 +15,7 @@ public class TaskPrefab : MonoBehaviour
 
     // Remaining time in seconds
     private float remainingTimeSeconds;
+
     //Animations
     public RectTransform targetRectTransform;
     public Vector3 TargetScale;
@@ -27,8 +28,9 @@ public class TaskPrefab : MonoBehaviour
     private void Awake()
     {
         // Find the remaining time text object by tag
-        remainingTimeText = GameObject.FindGameObjectWithTag("RemainingTimeText").GetComponent <TMP_Text>();
+        remainingTimeText = GameObject.FindGameObjectWithTag("RemainingTimeText").GetComponent<TMP_Text>();
     }
+
     public void Initialize(Task task, TimeManager manager)
     {
         TaskName = task.name;
@@ -40,16 +42,15 @@ public class TaskPrefab : MonoBehaviour
 
         // Update the remaining time text
         UpdateRemainingTimeText();
+
+        // Start updating remaining time
+        StartCoroutine(UpdateRemainingTime());
     }
 
     private void Start()
     {
         targetRectTransform.DOScale(TargetScale, AnimSpeed);
-    }
-
-    public void SetTaskInfo(string taskName)
-    {
-        taskNameText.text = taskName;
+        timerSlider.onValueChanged.AddListener(OnSliderValueChanged); // Subscribe to slider value changed event
     }
 
     // Method to update the remaining time text
@@ -70,26 +71,41 @@ public class TaskPrefab : MonoBehaviour
         return string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, secondsLeft);
     }
 
-    // Method to handle the button click for updating remaining time
-    public void UpdateRemainingTimeOnClick()
+    // Coroutine to continuously update remaining time
+    private IEnumerator UpdateRemainingTime()
+    {
+        while (true)
+        {
+            yield return null;
+        }
+    }
+
+    // Method to handle slider value changed event
+    private void OnSliderValueChanged(float value)
     {
         // Update the remaining time from the timer slider
-        remainingTimeSeconds = timerSlider.value * 3600; // Convert slider value to seconds
+        remainingTimeSeconds = value * 3600; // Convert slider value to seconds
 
         // Update the remaining time text
         UpdateRemainingTimeText();
     }
 
-    private void OnDeleteButtonClick()
+    public void SetTaskInfo(string taskName)
+    {
+        TaskName = taskName;
+        taskNameText.text = taskName;
+        deleteButton.onClick.AddListener(OnDeleteButtonClick); // Subscribe to the button click event
+    }
+
+    public void OnDeleteButtonClick()
     {
         StartCoroutine(WaitForAnimation());
         targetRectTransform.DOAnchorPos(OffsetRight, AnimSpeed);
-      
     }
+
     private IEnumerator WaitForAnimation()
     {
         yield return new WaitForSeconds(AnimSpeed);
-        TaskDeleteEvent(TaskName); // Trigger the event passing the task name 
-       
+        TaskDeleteEvent?.Invoke(TaskName); // Trigger the event passing the task name 
     }
 }
