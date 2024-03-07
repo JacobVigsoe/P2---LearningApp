@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    [SerializeField] private AudioSource buttonSound;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip pressClip;
+    [SerializeField] private AudioClip releaseClip;
 
-
-    public void PlayButtonSound()
+    public void PressSound()
     {
-        buttonSound.Play();
+        audioSource.PlayOneShot(pressClip);
     }
-
-
-
+    public void ReleaseSound()
+    {
+        audioSource.PlayOneShot(releaseClip);
+    }
 }

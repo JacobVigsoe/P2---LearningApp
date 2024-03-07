@@ -27,7 +27,7 @@ public class Note : MonoBehaviour
 
     public void OpenNote()
     {
-        soundManager.PlayButtonSound();
+        //soundManager.PressSound();
         UIManager.noteIsOpen = true;
         anim.SetTrigger("OpenNote");
     }
