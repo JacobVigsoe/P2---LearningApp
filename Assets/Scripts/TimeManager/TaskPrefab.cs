@@ -3,110 +3,49 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using System.Collections;
+using UnityEngine.Events;
 
 public class TaskPrefab : MonoBehaviour
 {
     public TMP_Text taskNameText;
-    private TMP_Text remainingTimeText;
-    public Button deleteButton;
-    public Slider timerSlider;
-    private TimeManager timeManager;
+    public Button deleteButton; // Reference to the delete button
+    public Slider timerSlider; // Reference to the slider component
+    private float tempSliderValue; // Variable to temporarily store the slider value
 
-    private float remainingTimeSeconds;
-    private string currentTaskName; // Stores the name of the last clicked task prefab
-
-    private float lastClickTime; // Stores the time of the last click
-    private float elapsedTimeSinceClick; // Stores the elapsed time since the last click
-
+    //Animations
     public RectTransform targetRectTransform;
     public Vector3 TargetScale;
     public Vector2 OffsetRight;
     public float AnimSpeed;
     public string TaskName { get; private set; }
     public delegate void OnTaskDelete(string taskName);
-    public static event OnTaskDelete TaskDeleteEvent;
+    public static event OnTaskDelete TaskDeleteEvent; // Event for deleting task
 
-    private void Awake()
+    private TMP_Text remainingTimeText; // Reference to TMP text for remaining time
+    private static TaskPrefab lastClickedTaskPrefab; // Reference to the last clicked TaskPrefab
+
+    private void Start()
     {
-        remainingTimeText = GameObject.FindGameObjectWithTag("RemainingTimeText").GetComponent<TMP_Text>();
+        targetRectTransform.DOScale(TargetScale, AnimSpeed);
+        remainingTimeText = GameObject.FindWithTag("RemainingTimeText").GetComponent<TMP_Text>();
+
+        // Subscribe to the slider's OnValueChanged event to update the text in real-time
+        timerSlider.onValueChanged.AddListener(UpdateStoredTimerText);
     }
 
     public void Initialize(Task task, TimeManager manager)
     {
         TaskName = task.name;
         taskNameText.text = task.name;
-        timeManager = manager;
-
-        SetRemainingTime(task.remainingTimeSeconds); // Set the remaining time
-
-        UpdateRemainingTimeText();
-        StartCoroutine(UpdateRemainingTime());
-    }
-
-    private void Start()
-    {
-        targetRectTransform.DOScale(TargetScale, AnimSpeed);
-        timerSlider.onValueChanged.AddListener(OnSliderValueChanged);
-        deleteButton.onClick.AddListener(OnDeleteButtonClick);
-    }
-
-    public void UpdateRemainingTimeText()
-    {
-        if (remainingTimeText != null)
-        {
-            // Only update the remaining time text if the current task name matches the task name of this task prefab
-            if (TaskName == currentTaskName)
-            {
-                remainingTimeText.text = FormatTime(remainingTimeSeconds);
-            }
-        }
-    }
-
-    private string FormatTime(float seconds)
-    {
-        int hours = Mathf.FloorToInt(seconds / 3600);
-        int minutes = Mathf.FloorToInt((seconds % 3600) / 60);
-        int secondsLeft = Mathf.FloorToInt(seconds % 60);
-        return string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, secondsLeft);
-    }
-
-    private IEnumerator UpdateRemainingTime()
-    {
-        while (true)
-        {
-            // Update the remaining time continuously by subtracting the elapsed time since the last click
-            if (currentTaskName != null)
-            {
-                elapsedTimeSinceClick = Time.time - lastClickTime;
-                remainingTimeSeconds -= elapsedTimeSinceClick;
-                lastClickTime = Time.time;
-
-                // Ensure remaining time does not go below zero
-                remainingTimeSeconds = Mathf.Max(0, remainingTimeSeconds);
-
-                UpdateRemainingTimeText();
-            }
-
-            yield return null;
-        }
-    }
-
-    private void OnSliderValueChanged(float value)
-    {
-        SetRemainingTime(value * 3600); // Convert slider value to seconds
-    }
-
-    private void SetRemainingTime(float seconds)
-    {
-        remainingTimeSeconds = seconds;
+        tempSliderValue = timerSlider.value; // Initialize tempSliderValue with current slider value
     }
 
     public void SetTaskInfo(string taskName)
     {
         TaskName = taskName;
         taskNameText.text = taskName;
-        currentTaskName = taskName; // Update the current task name when setting task info
-        lastClickTime = Time.time; // Update the last click time when setting task info
+        deleteButton.onClick.AddListener(OnDeleteButtonClick); // Subscribe to the button click event
+        deleteButton.onClick.AddListener(OnUpdateTimerButtonClick); // Subscribe to the button click event to update timer value
     }
 
     public void OnDeleteButtonClick()
@@ -118,6 +57,37 @@ public class TaskPrefab : MonoBehaviour
     private IEnumerator WaitForAnimation()
     {
         yield return new WaitForSeconds(AnimSpeed);
-        TaskDeleteEvent?.Invoke(TaskName);
+        TaskDeleteEvent?.Invoke(TaskName); // Trigger the event passing the task name 
+    }
+
+    // Method to update the stored timer text
+    private void UpdateStoredTimerText(float value)
+    {
+        if (remainingTimeText != null && this == lastClickedTaskPrefab)
+        {
+            float seconds = value * 3600f; // Convert slider value to seconds
+            remainingTimeText.text = FormatTime(seconds);
+        }
+        else
+        {
+            Debug.LogError("RemainingTimeText not found or TaskPrefab not last clicked!");
+        }
+    }
+
+    // New method to handle the click event for updating the stored timer text
+    public void OnUpdateTimerButtonClick()
+    {
+        tempSliderValue = timerSlider.value;
+        lastClickedTaskPrefab = this;
+        UpdateStoredTimerText(tempSliderValue);
+    }
+
+    // Helper method to format time as HH:MM:SS
+    private string FormatTime(float seconds)
+    {
+        int hours = Mathf.FloorToInt(seconds / 3600);
+        int minutes = Mathf.FloorToInt((seconds % 3600) / 60);
+        int secs = Mathf.FloorToInt(seconds % 60);
+        return string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, secs);
     }
 }

@@ -92,7 +92,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2630199746572239583}
         m_TargetAssemblyTypeName: TaskPrefab, Assembly-CSharp
-        m_MethodName: UpdateRemainingTimeText
+        m_MethodName: OnUpdateTimerButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
