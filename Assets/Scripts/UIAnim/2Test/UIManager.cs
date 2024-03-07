@@ -71,9 +71,7 @@ public class UIManager : MonoBehaviour
 
         // Jump to the end of the list
         currentNoteIndex = notesList.Count;
-
-
-
+        
         // Create a new note
         GameObject newNote = Instantiate(notePrefab) as GameObject;
         notesList.Add(newNote);
