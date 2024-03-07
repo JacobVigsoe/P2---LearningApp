@@ -77,7 +77,6 @@ public class TimeManager : MonoBehaviour
     public Scrollbar hoursToCompleteScrollbar;
 
     private const string TaskInfosKey = "TaskInfos";
-    private CurrentTaskInformation currentTaskInformation;
     private void Start()
     {
         TaskPrefab.TaskDeleteEvent += OnTaskDelete; // Subscribe to the task delete event
@@ -96,39 +95,6 @@ public class TimeManager : MonoBehaviour
         }
     }
 
-    private float GetCurrentTime(Task task)
-    {
-        float RemainingSecond = task.remainingTimeSeconds;
-
-        return RemainingSecond;
-    }
-
-    public void OnButtonClick(string taskName)
-    {
-        // Find the task with the given name
-        Task task = tasks.Find(t => t.name == taskName);
-
-        if (task != null)
-        {
-            // Get the remaining time in seconds for the task
-            float remainingTimeSeconds = task.remainingTimeSeconds;
-
-            // Convert remaining time to hours, minutes, and seconds
-            float hours = remainingTimeSeconds / 3600;
-            float minutes = (remainingTimeSeconds % 3600) / 60;
-            float seconds = remainingTimeSeconds % 60;
-
-            // Create the string representation
-            string information = string.Format("{0:D2}:{1:D2}:{2:D2}", (int)hours, (int)minutes, (int)seconds);
-
-            // Set the task information using the appropriate method
-            currentTaskInformation.SetTaskInformation(information);
-        }
-        else
-        {
-            Debug.LogWarning("Task with name '" + taskName + "' not found.");
-        }
-    }
     private void OnTaskDelete(string taskName)
     {
         // Find the task with the given name and remove it from the list
