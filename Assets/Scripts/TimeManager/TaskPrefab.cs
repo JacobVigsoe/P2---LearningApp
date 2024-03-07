@@ -66,7 +66,7 @@ public class TaskPrefab : MonoBehaviour
         if (remainingTimeText != null && this == lastClickedTaskPrefab)
         {
             float seconds = value * 3600f; // Convert slider value to seconds
-            remainingTimeText.text = "Stored Timer Value: " + FormatTime(seconds);
+            remainingTimeText.text = FormatTime(seconds);
         }
         else
         {
