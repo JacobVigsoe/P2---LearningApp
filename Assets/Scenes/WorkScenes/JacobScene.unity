@@ -2230,7 +2230,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ef68b98fbfe545fa9e0d700e69b89f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonSound: {fileID: 711629588}
+  audioSource: {fileID: 0}
+  pressClip: {fileID: 0}
+  releaseClip: {fileID: 0}
 --- !u!4 &711629587
 Transform:
   m_ObjectHideFlags: 0
