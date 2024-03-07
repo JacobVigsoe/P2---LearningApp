@@ -20,7 +20,7 @@ public class LongPressDetect : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        soundManager.PlayButtonSound();
+        soundManager.PressSound();
         isPressed = true;
         transform.DOScale(originalScale * pressedScaleMultiplier, animationTime);
     }
@@ -29,7 +29,7 @@ public class LongPressDetect : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     {
         if(isPressed)
         {
-            soundManager.PlayButtonSound();
+            soundManager.ReleaseSound();
             isPressed = false;
             transform.DOScale(originalScale, animationTime);
         }
