@@ -10,7 +10,7 @@ public class SoundManager : MonoBehaviour
 
     public void PressSound()
     {
-        audioSource.PlayOneShot(pressClip);
+        audioSource.PlayOneShot(pressClip, 0.7f);
     }
     public void ReleaseSound()
     {

@@ -9,25 +9,25 @@ public class Note : MonoBehaviour
 {
     private Animator anim;
     private UIManager UIManager;
-    private TextMeshProUGUI noteTitle;
+    private GameObject noteTitle;
+    private TMP_InputField noteTitleInput;
     private Button button;
-    private SoundManager soundManager;
-
-    
+    private GameObject inputField;
     void Start()
     {
-        soundManager = GameObject.FindObjectOfType<SoundManager>();
         button = GetComponent<Button>();
-        noteTitle = GetComponentInChildren<TextMeshProUGUI>();
-        UIManager = GameObject.FindObjectOfType<UIManager>();
+        noteTitle = transform.GetChild(0).gameObject;
+        UIManager = FindObjectOfType<UIManager>();
         anim = GetComponent<Animator>();
+        inputField = transform.GetChild(1).gameObject;
+        noteTitleInput = noteTitle.GetComponent<TMP_InputField>();
         
-        noteTitle.text = "Note " + UIManager.notesList.Count;
+        noteTitleInput.text = "Note " + UIManager.notesList.Count;
+        inputField.SetActive(false);
     }
 
     public void OpenNote()
     {
-        //soundManager.PressSound();
         UIManager.noteIsOpen = true;
         anim.SetTrigger("OpenNote");
     }
@@ -35,9 +35,19 @@ public class Note : MonoBehaviour
     void Update()
     {
         if (UIManager.noteIsOpen)
+        {
+            noteTitleInput.interactable = true;
             button.enabled = false;
+            inputField.SetActive(true);
+        }
         else
+        {
+            noteTitleInput.interactable = false;
             button.enabled = true;
-        
+            inputField.SetActive(false);
+        } 
     }
+
+
+
 }

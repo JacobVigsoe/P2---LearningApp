@@ -66,7 +66,8 @@ public class UIManager : MonoBehaviour
         // Turn off the current note
         if (notesList.Count > 0)
         {
-            notesList[currentNoteIndex].SetActive(false);
+            notesList[currentNoteIndex].GetComponent<RectTransform>().DOAnchorPos(offsetleft, animationSpeed);
+            StartCoroutine(CloseNoteCoroutine(currentNoteIndex));
         }
 
         // Jump to the end of the list
@@ -78,7 +79,8 @@ public class UIManager : MonoBehaviour
         newNote.name = "New Note " + notesList.Count;
         newNote.transform.SetParent(noteMenu.transform, false);
         RectTransform newNoteRectTransform = newNote.GetComponent<RectTransform>();
-        newNoteRectTransform.DOScale(0.8f, animationSpeed);
+        newNoteRectTransform.localPosition = offsetRight;
+        newNoteRectTransform.DOAnchorPos(origin, animationSpeed);
         noteIsOpen = false;
     }
 
@@ -91,7 +93,8 @@ public class UIManager : MonoBehaviour
 
     public void NextNote()
     {
-        notesList[currentNoteIndex].SetActive(false);
+        notesList[currentNoteIndex].GetComponent<RectTransform>().DOAnchorPos(offsetleft, animationSpeed).SetEase(Ease.InOutSine);
+        StartCoroutine(CloseNoteCoroutine(currentNoteIndex));
         noteIsOpen = false;
 
         currentNoteIndex++;
@@ -100,6 +103,15 @@ public class UIManager : MonoBehaviour
             currentNoteIndex = 0;
         
         notesList[currentNoteIndex].SetActive(true);
+        notesList[currentNoteIndex].GetComponent<RectTransform>().DOAnchorPos(origin, animationSpeed).SetEase(Ease.InOutSine);
+    }
+
+    private IEnumerator CloseNoteCoroutine(int index)
+    {
+        yield return new WaitForSeconds(animationSpeed);
+        notesList[index].SetActive(false);
+        notesList[index].GetComponent<RectTransform>().localPosition = offsetRight;
+
     }
 }
 
