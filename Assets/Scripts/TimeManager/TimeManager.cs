@@ -11,16 +11,18 @@ public class Task
     public string name;
     public int hoursToComplete;
     public DateTime dueDate;
-    public float remainingTimeSeconds; // New property to store remaining time
-    public float savedSliderValue; // New property to store saved slider value
+    public float remainingTimeSeconds;
+    public float savedSliderValue;
+    public Color taskColor; // New property to store task color
 
-    public Task(string _name, int _hoursToComplete, DateTime _dueDate)
+    public Task(string _name, int _hoursToComplete, DateTime _dueDate, Color _taskColor)
     {
         name = _name;
         hoursToComplete = _hoursToComplete;
         dueDate = _dueDate;
-        remainingTimeSeconds = CalculateRemainingTime(); // Initialize remaining time
+        remainingTimeSeconds = CalculateRemainingTime();
         savedSliderValue = CalculateSavedSliderValue();
+        taskColor = _taskColor;
     }
 
     // Method to calculate remaining time
@@ -48,20 +50,8 @@ public class Task
 
 }
 
-
-
 public class TimeManager : MonoBehaviour
 {
-    private DateTime currentTime;
-    private DateTime startOfWeek;
-    private TimeSpan dayDuration;
-    private TimeSpan elapsedWeekTime;
-    private bool isRunning = false;
-
-    public TMP_Text timeText;
-    public TMP_Text dateText;
-    public Slider weekSlider;
-
     public List<Task> tasks = new List<Task>();
 
     public TMP_InputField taskNameInput;
@@ -76,25 +66,41 @@ public class TimeManager : MonoBehaviour
     public int maxColumns = 3;
     public Scrollbar hoursToCompleteScrollbar;
 
+    public ColorPicker colorPicker; // Reference to the color picker UI element
+    public Image colorIndicator; // Reference to the UI element for color indication
+    public Color defaultColor = Color.white; // Default color if none is selected
+    private Color selectedColor;
+
     private const string TaskInfosKey = "TaskInfos";
     private void Start()
     {
         TaskPrefab.TaskDeleteEvent += OnTaskDelete; // Subscribe to the task delete event
-        UpdateDateTime();
-        StartTimer();
         LoadTasks();
-        Initialize();
-
     }
 
-    private void Update()
+    public void PickedColorIndicator()
     {
-        if (isRunning)
+        // Start a coroutine to update the color indicator after a short delay
+        StartCoroutine(UpdateColorIndicator());
+    }
+    private IEnumerator UpdateColorIndicator()
+    {
+        // Wait for a short delay (adjust the time as needed)
+        yield return new WaitForSeconds(0.01f); // Adjust the delay time if necessary
+
+        // Get the selected color from the color picker
+        selectedColor = colorPicker.SelectedColor;
+
+        // Update the color of the color indicator
+        if (colorIndicator != null)
         {
-            UpdateTimer();
+            colorIndicator.color = selectedColor;
+        }
+        else
+        {
+            Debug.LogError("Color indicator is not assigned.");
         }
     }
-
 
     private void OnTaskDelete(string taskName)
     {
@@ -117,29 +123,17 @@ public class TimeManager : MonoBehaviour
             }
         }
     }
-    public void StartTimer()
-    {
-        isRunning = true;
-    }
-
-    public void StopTimer()
-    {
-        isRunning = false;
-    }
-
-    public void ResetTimer()
-    {
-        Initialize();
-        UpdateDateTime();
-    }
-
+  
     public void AddTask()
     {
         string taskName = taskNameInput.text;
         int hoursToComplete = Mathf.RoundToInt(hoursToCompleteScrollbar.value * 24);
         DateTime dueDate = DateTime.Now.AddHours(hoursToComplete);
 
-        tasks.Add(new Task(taskName, hoursToComplete, dueDate));
+        // Retrieve the selected color from the color picker
+        Color taskColor = colorPicker.SelectedColor;
+
+        tasks.Add(new Task(taskName, hoursToComplete, dueDate, taskColor)); // Pass the color to the Task constructor
 
         int rowIndex = (tasks.Count - 1) / maxColumns;
         int columnIndex = (tasks.Count - 1) % maxColumns;
@@ -148,7 +142,7 @@ public class TimeManager : MonoBehaviour
 
         GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, tasksParent);
         TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
-        newTaskPrefab.SetTaskInfo(taskName);
+        newTaskPrefab.SetTaskInfo(taskColor, taskName);
 
         Slider timerSlider = newTaskObject.GetComponentInChildren<Slider>();
         timerSlider.maxValue = hoursToComplete;
@@ -199,8 +193,8 @@ public class TimeManager : MonoBehaviour
             Slider timerSlider = FindSliderForTask(task);
             float sliderValue = timerSlider != null ? timerSlider.value : 0f;
 
-            // Concatenate the task information with remaining time and slider value using '|' as delimiter
-            string taskInfo = $"{task.name}|{task.hoursToComplete}|{task.remainingTimeSeconds.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{sliderValue.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{task.savedSliderValue.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}";
+            // Concatenate the task information with remaining time, slider value, and color using '|' as delimiter
+            string taskInfo = $"{task.name}|{task.hoursToComplete}|{task.remainingTimeSeconds.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{sliderValue.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{task.savedSliderValue.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{ColorUtility.ToHtmlStringRGB(task.taskColor)}";
 
             // Add the task information to the list
             taskInfos.Add(taskInfo);
@@ -208,6 +202,7 @@ public class TimeManager : MonoBehaviour
             // Save the slider value for this task separately
             PlayerPrefs.SetFloat(task.name + "_SliderValue", sliderValue);
             PlayerPrefs.SetFloat(task.name + "_SavedSliderValue", task.savedSliderValue); // Save the saved slider value
+            PlayerPrefs.SetString(task.name + "_Color", ColorUtility.ToHtmlStringRGB(task.taskColor)); // Save the color
         }
 
         string taskInfosString = string.Join(",", taskInfos);
@@ -216,6 +211,7 @@ public class TimeManager : MonoBehaviour
 
         Debug.Log("Task information saved: " + taskInfosString);
     }
+
 
 
 
@@ -268,17 +264,27 @@ public class TimeManager : MonoBehaviour
                 float remainingTimeSeconds = float.Parse(info[2].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
                 float sliderValue = float.Parse(info[3].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
                 float savedSliderValue = float.Parse(info[4].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
+                Color color = Color.white; // Default color in case parsing fails
+
+                // Check if there is color information available
+                if (info.Length > 5)
+                {
+                    // Parse the color information
+                    ColorUtility.TryParseHtmlString("#" + info[5], out color);
+                }
 
                 Debug.Log("Task name: " + taskName);
                 Debug.Log("Hours to complete: " + hoursToComplete);
                 Debug.Log("Remaining time seconds: " + remainingTimeSeconds);
                 Debug.Log("Slider value: " + sliderValue);
                 Debug.Log("Saved slider value: " + savedSliderValue);
+                Debug.Log("Color: " + color);
 
                 DateTime dueDate = DateTime.Now.AddSeconds(remainingTimeSeconds);
-                Task task = new Task(taskName, hoursToComplete, dueDate);
+                Task task = new Task(taskName, hoursToComplete, dueDate, color);
                 task.remainingTimeSeconds = remainingTimeSeconds;
                 task.savedSliderValue = savedSliderValue;
+                task.taskColor = color; // Assign the parsed color to the task
 
                 // Set the saved slider value back to the task
                 task.savedSliderValue = PlayerPrefs.GetFloat(taskName + "_SavedSliderValue", sliderValue);
@@ -297,6 +303,7 @@ public class TimeManager : MonoBehaviour
 
 
 
+
     private void RecreateTaskPrefabs()
     {
 
@@ -312,7 +319,7 @@ public class TimeManager : MonoBehaviour
             Vector3 taskPosition = tasksParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
             GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, tasksParent);
             TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
-            newTaskPrefab.SetTaskInfo(task.name);
+            newTaskPrefab.SetTaskInfo(task.taskColor, task.name); // Pass color information to TaskPrefab
 
             // Get the slider component inside the task prefab
             Slider timerSlider = newTaskPrefab.GetComponentInChildren<Slider>();
@@ -361,8 +368,6 @@ public class TimeManager : MonoBehaviour
             // Calculate the total time remaining
             float totalTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
 
-            // Set the initial slider value to the saved value
-            timerSlider.value = savedSliderValue;
 
             // Start the countdown from the saved slider value
             while (DateTime.Now < dueDate)
@@ -387,41 +392,5 @@ public class TimeManager : MonoBehaviour
     }
 
 
-    private void UpdateTimer()
-    {
-        UpdateDateTime();
-        UpdateDisplay();
-    }
-
-    private void Initialize()
-    {
-        startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
-        dayDuration = TimeSpan.FromHours(24);
-        elapsedWeekTime = TimeSpan.Zero;
-    }
-
-    private void UpdateDateTime()
-    {
-        currentTime = DateTime.Now;
-        elapsedWeekTime = currentTime - startOfWeek;
-    }
-
-    private void UpdateDisplay()
-    {
-        if (timeText != null)
-        {
-            timeText.text = currentTime.ToString("HH:mm:ss");
-        }
-
-        if (dateText != null)
-        {
-            dateText.text = currentTime.ToString("dddd, MMMM dd, yyyy");
-        }
-
-        if (weekSlider != null)
-        {
-            float fillAmount = (float)(elapsedWeekTime.TotalSeconds / dayDuration.TotalSeconds);
-            weekSlider.value = fillAmount;
-        }
-    }
+  
 }

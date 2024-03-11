@@ -8,6 +8,7 @@ using UnityEngine.Events;
 public class TaskPrefab : MonoBehaviour
 {
     public TMP_Text taskNameText;
+    public Image taskColorTheme;
     public Button deleteButton; // Reference to the delete button
     public Slider timerSlider; // Reference to the slider component
     private float tempSliderValue; // Variable to temporarily store the slider value
@@ -40,13 +41,15 @@ public class TaskPrefab : MonoBehaviour
         tempSliderValue = timerSlider.value; // Initialize tempSliderValue with current slider value
     }
 
-    public void SetTaskInfo(string taskName)
+    public void SetTaskInfo(Color color, string taskName)
     {
         TaskName = taskName;
         taskNameText.text = taskName;
+        taskColorTheme.color = color; // Set the text color
         deleteButton.onClick.AddListener(OnDeleteButtonClick); // Subscribe to the button click event
         deleteButton.onClick.AddListener(OnUpdateTimerButtonClick); // Subscribe to the button click event to update timer value
     }
+
 
     public void OnDeleteButtonClick()
     {

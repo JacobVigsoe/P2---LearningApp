@@ -767,6 +767,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   taskNameText: {fileID: 435075616229994079}
+  taskColorTheme: {fileID: 8050539557101155207}
   deleteButton: {fileID: 3811148513998265801}
   timerSlider: {fileID: 6484836588420206227}
   targetRectTransform: {fileID: 684383380727459123}
