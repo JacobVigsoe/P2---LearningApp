@@ -10,6 +10,7 @@ public class ColorPicker : MonoBehaviour
     public Color defaultColor = Color.white; // Default color if none is selected
     void Start()
     {
+        selectedColor = defaultColor;
         // Hide the color picker panel initially
         colorPickerPanel.SetActive(false);
 

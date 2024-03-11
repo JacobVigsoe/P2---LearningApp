@@ -53,9 +53,12 @@ public class Task
 public class TimeManager : MonoBehaviour
 {
     public List<Task> tasks = new List<Task>();
+    private Dictionary<string, bool> suggestedTasks = new Dictionary<string, bool>();
 
     public TMP_InputField taskNameInput;
     public TMP_InputField hoursToCompleteInput;
+
+    public TMP_Dropdown taskSuggestionsDropdown; // Reference to the dropdown UI element
 
     public GameObject taskPrefab;
     public Transform tasksParent;
@@ -76,6 +79,7 @@ public class TimeManager : MonoBehaviour
     {
         TaskPrefab.TaskDeleteEvent += OnTaskRemove; // Subscribe to the task delete event
         LoadTasks();
+        InitializeAutocomplete();
     }
 
     public void PickedColorIndicator()
@@ -190,7 +194,89 @@ public class TimeManager : MonoBehaviour
 
         SaveTasks();
 
+        // Add the task name to suggested tasks
+        AddToSuggestedTasks(taskName);
+
     }
+
+    private void InitializeAutocomplete()
+    {
+        foreach (Task task in tasks)
+        {
+            AddToSuggestedTasks(task.name);
+        }
+    }
+
+    private void AddToSuggestedTasks(string taskName)
+    {
+        if (!suggestedTasks.ContainsKey(taskName))
+        {
+            suggestedTasks.Add(taskName, true);
+        }
+    }
+
+    private void TaskNameInputChange()
+    {
+        string inputText = taskNameInput.text;
+
+        // Check if input text is empty
+        if (string.IsNullOrEmpty(inputText))
+        {
+            // Hide the dropdown if input is empty
+            taskSuggestionsDropdown.gameObject.SetActive(false);
+            return; // Exit the method early
+        }
+
+        // Get all task names, including removed tasks from PlayerPrefs
+        List<string> allTaskNames = new List<string>();
+        foreach (Task task in tasks)
+        {
+            allTaskNames.Add(task.name);
+        }
+
+        // Get removed task names from PlayerPrefs
+        string removedTasksString = PlayerPrefs.GetString("RemovedTasks", "");
+        if (!string.IsNullOrEmpty(removedTasksString))
+        {
+            string[] removedTaskInfos = removedTasksString.Split(',');
+            foreach (string taskInfo in removedTaskInfos)
+            {
+                string[] info = taskInfo.Split('|');
+                string taskName = info[0];
+                allTaskNames.Add(taskName);
+            }
+        }
+
+        // Filter suggestions based on input text
+        List<string> suggestions = new List<string>();
+        foreach (string taskName in allTaskNames)
+        {
+            if (taskName.StartsWith(inputText))
+            {
+                suggestions.Add(taskName);
+            }
+        }
+
+        // Display suggestions in dropdown if any
+        if (suggestions.Count > 0)
+        {
+            // Show the dropdown
+            taskSuggestionsDropdown.gameObject.SetActive(true);
+
+            // Clear existing options
+            taskSuggestionsDropdown.ClearOptions();
+
+            // Add suggestions to dropdown options
+            taskSuggestionsDropdown.AddOptions(suggestions);
+        }
+        else
+        {
+            // Hide the dropdown if no suggestions
+            taskSuggestionsDropdown.gameObject.SetActive(false);
+        }
+    }
+
+
 
     private float GetSavedSliderValue(string taskName)
     {
