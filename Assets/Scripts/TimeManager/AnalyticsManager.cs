@@ -21,6 +21,14 @@ public class AnalyticsManager : MonoBehaviour
         // Retrieve the stored removed tasks string from PlayerPrefs
         string removedTasksString = PlayerPrefs.GetString("RemovedTasks", "");
 
+        // Check if the string is empty
+        if (string.IsNullOrEmpty(removedTasksString))
+        {
+            // If the string is empty, there are no completed tasks
+            completedTasksText.text = "Completed Tasks: 0";
+            return;
+        }
+
         // Split the string into an array of task information
         string[] removedTaskInfos = removedTasksString.Split(',');
 
@@ -30,6 +38,7 @@ public class AnalyticsManager : MonoBehaviour
         // Update the UI text to display the completed tasks count
         completedTasksText.text = "Completed Tasks: " + completedTasksCount;
     }
+
 
     public void DeleteStoredTasks()
     {

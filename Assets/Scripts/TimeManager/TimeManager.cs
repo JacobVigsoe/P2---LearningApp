@@ -135,16 +135,24 @@ public class TimeManager : MonoBehaviour
         // Retrieve the existing removed tasks string from PlayerPrefs
         string removedTasksString = PlayerPrefs.GetString("RemovedTasks", "");
 
+        // Check if the existing string is empty
+        if (!string.IsNullOrEmpty(removedTasksString))
+        {
+            // Append a comma if the string is not empty
+            removedTasksString += ",";
+        }
+
         // Append the information of the removed task to the existing string
         string taskInfo = $"{removedTask.name}|{removedTask.hoursToComplete}|{removedTask.remainingTimeSeconds}|{removedTask.savedSliderValue}";
-        removedTasksString += taskInfo + ",";
+        removedTasksString += taskInfo;
 
         // Save the updated removed tasks string back to PlayerPrefs
         PlayerPrefs.SetString("RemovedTasks", removedTasksString);
         PlayerPrefs.Save();
     }
 
-    
+
+
     public void AddTask()
     {
         string taskName = taskNameInput.text;
