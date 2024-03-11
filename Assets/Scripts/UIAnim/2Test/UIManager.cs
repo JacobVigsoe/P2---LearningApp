@@ -12,6 +12,8 @@ public class UIManager : MonoBehaviour
     [Header("Menus")]
     [SerializeField] private RectTransform mainMenu;
     [SerializeField] private RectTransform noteMenu;
+    [SerializeField] private RectTransform analyticsMenu;
+    [SerializeField] private RectTransform timerMenu;
 
     [Header("Notes")]
     [SerializeField] private GameObject notePrefab;
@@ -39,6 +41,25 @@ public class UIManager : MonoBehaviour
         mainMenu.DOAnchorPos(offsetleft, animationSpeed);
         noteMenu.DOAnchorPos(origin, animationSpeed);
         closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
+        timerMenu.DOAnchorPos(offsetleft, animationSpeed);
+    }
+    public void AnalyticsMenu()
+    {
+        analyticsMenu.DOAnchorPos(origin, animationSpeed);
+        mainMenu.DOAnchorPos(offsetUp, animationSpeed);
+        noteMenu.DOAnchorPos(offsetRight, animationSpeed);
+        timerMenu.DOAnchorPos(offsetleft, animationSpeed);
+
+    }
+
+    public void TimerMenu()
+    {
+        timerMenu.DOAnchorPos(origin, animationSpeed);
+        mainMenu.DOAnchorPos(offsetRight, animationSpeed);
+        noteMenu.DOAnchorPos(offsetRight, animationSpeed);
+        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
     }
 
     void Update()
@@ -59,6 +80,8 @@ public class UIManager : MonoBehaviour
     {
         noteMenu.DOAnchorPos(offsetRight, animationSpeed);
         mainMenu.DOAnchorPos(origin, animationSpeed);
+        analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
+        timerMenu.DOAnchorPos(offsetleft, animationSpeed);
     }
 
     public void NewNote()

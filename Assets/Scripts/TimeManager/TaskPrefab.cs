@@ -22,11 +22,14 @@ public class TaskPrefab : MonoBehaviour
     public delegate void OnTaskDelete(string taskName);
     public static event OnTaskDelete TaskDeleteEvent; // Event for deleting task
 
+    private UIManager uimanager;
+
     private TMP_Text remainingTimeText; // Reference to TMP text for remaining time
     private static TaskPrefab lastClickedTaskPrefab; // Reference to the last clicked TaskPrefab
 
     private void Start()
     {
+        uimanager = GameObject.FindObjectOfType<UIManager>();
         targetRectTransform.DOScale(TargetScale, AnimSpeed);
         remainingTimeText = GameObject.FindWithTag("RemainingTimeText").GetComponent<TMP_Text>();
 
@@ -80,9 +83,24 @@ public class TaskPrefab : MonoBehaviour
     // New method to handle the click event for updating the stored timer text
     public void OnUpdateTimerButtonClick()
     {
-        tempSliderValue = timerSlider.value;
+        // Set lastClickedTaskPrefab to the current TaskPrefab instance
         lastClickedTaskPrefab = this;
+
+        // Update the stored timer text
+        tempSliderValue = timerSlider.value;
         UpdateStoredTimerText(tempSliderValue);
+
+       StartCoroutine(UpdateTimerMenu());
+    }
+    private IEnumerator UpdateTimerMenu()
+    {
+        // Wait for a short delay (adjust the time as needed)
+        yield return new WaitForSeconds(0.1f); // Adjust the delay time if necessary
+        
+        // Call the TimerMenu() method from the UIManager
+        uimanager.TimerMenu();
+
+    
     }
 
     // Helper method to format time as HH:MM:SS

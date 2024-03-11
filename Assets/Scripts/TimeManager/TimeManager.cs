@@ -74,7 +74,7 @@ public class TimeManager : MonoBehaviour
     private const string TaskInfosKey = "TaskInfos";
     private void Start()
     {
-        TaskPrefab.TaskDeleteEvent += OnTaskDelete; // Subscribe to the task delete event
+        TaskPrefab.TaskDeleteEvent += OnTaskRemove; // Subscribe to the task delete event
         LoadTasks();
     }
 
@@ -102,14 +102,20 @@ public class TimeManager : MonoBehaviour
         }
     }
 
-    private void OnTaskDelete(string taskName)
+    private void OnTaskRemove(string taskName)
     {
-        // Find the task with the given name and remove it from the list
+        // Find the task with the given name
         Task taskToRemove = tasks.Find(task => task.name == taskName);
         if (taskToRemove != null)
         {
+            // Remove the task from the list
             tasks.Remove(taskToRemove);
-            SaveTasks(); // Save tasks after removing the task
+
+            // Save the removed task data to another local storage
+            SaveRemovedTask(taskToRemove);
+
+            // Save the updated tasks list
+            SaveTasks();
         }
 
         // Destroy the corresponding TaskPrefab GameObject
@@ -123,7 +129,22 @@ public class TimeManager : MonoBehaviour
             }
         }
     }
-  
+
+    private void SaveRemovedTask(Task removedTask)
+    {
+        // Retrieve the existing removed tasks string from PlayerPrefs
+        string removedTasksString = PlayerPrefs.GetString("RemovedTasks", "");
+
+        // Append the information of the removed task to the existing string
+        string taskInfo = $"{removedTask.name}|{removedTask.hoursToComplete}|{removedTask.remainingTimeSeconds}|{removedTask.savedSliderValue}";
+        removedTasksString += taskInfo + ",";
+
+        // Save the updated removed tasks string back to PlayerPrefs
+        PlayerPrefs.SetString("RemovedTasks", removedTasksString);
+        PlayerPrefs.Save();
+    }
+
+
     public void AddTask()
     {
         string taskName = taskNameInput.text;
