@@ -10,6 +10,11 @@ public class AnalyticsManager : MonoBehaviour
         // Load completed tasks count from PlayerPrefs and update the UI
         UpdateCompletedTasksCount();
     }
+    private void FixedUpdate()
+    {
+      
+        UpdateCompletedTasksCount();
+    }
 
     public void UpdateCompletedTasksCount()
     {
@@ -24,5 +29,13 @@ public class AnalyticsManager : MonoBehaviour
 
         // Update the UI text to display the completed tasks count
         completedTasksText.text = "Completed Tasks: " + completedTasksCount;
+    }
+
+    public void DeleteStoredTasks()
+    {
+        // Clear the stored removed tasks from PlayerPrefs
+        PlayerPrefs.DeleteKey("RemovedTasks");
+
+        UpdateCompletedTasksCount();
     }
 }

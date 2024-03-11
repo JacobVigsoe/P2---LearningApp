@@ -50,7 +50,6 @@ public class TaskPrefab : MonoBehaviour
         taskNameText.text = taskName;
         taskColorTheme.color = color; // Set the text color
         deleteButton.onClick.AddListener(OnDeleteButtonClick); // Subscribe to the button click event
-        deleteButton.onClick.AddListener(OnUpdateTimerButtonClick); // Subscribe to the button click event to update timer value
     }
 
 
@@ -90,17 +89,7 @@ public class TaskPrefab : MonoBehaviour
         tempSliderValue = timerSlider.value;
         UpdateStoredTimerText(tempSliderValue);
 
-       StartCoroutine(UpdateTimerMenu());
-    }
-    private IEnumerator UpdateTimerMenu()
-    {
-        // Wait for a short delay (adjust the time as needed)
-        yield return new WaitForSeconds(0.1f); // Adjust the delay time if necessary
-        
-        // Call the TimerMenu() method from the UIManager
         uimanager.TimerMenu();
-
-    
     }
 
     // Helper method to format time as HH:MM:SS
