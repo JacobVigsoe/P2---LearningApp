@@ -23,12 +23,13 @@ public class TaskPrefab : MonoBehaviour
     public static event OnTaskDelete TaskDeleteEvent; // Event for deleting task
 
     private UIManager uimanager;
-
+    private GetXPTest getXPTest;
     private TMP_Text remainingTimeText; // Reference to TMP text for remaining time
     private static TaskPrefab lastClickedTaskPrefab; // Reference to the last clicked TaskPrefab
 
     private void Start()
     {
+        getXPTest = GameObject.FindObjectOfType<GetXPTest>();
         uimanager = GameObject.FindObjectOfType<UIManager>();
         targetRectTransform.DOScale(TargetScale, AnimSpeed);
         remainingTimeText = GameObject.FindWithTag("RemainingTimeText").GetComponent<TMP_Text>();
@@ -57,6 +58,7 @@ public class TaskPrefab : MonoBehaviour
     {
         StartCoroutine(WaitForAnimation());
         targetRectTransform.DOAnchorPos(OffsetRight, AnimSpeed);
+        getXPTest.FinishedTaskXP();
     }
 
     private IEnumerator WaitForAnimation()
