@@ -277,6 +277,29 @@ public class TimeManager : MonoBehaviour
     }
 
 
+   public void DisplaySuggestedOnClick(int index)
+{
+    // Get the selected task name from the dropdown options
+    string selectedTaskName = taskSuggestionsDropdown.options[index].text;
+
+    // Find the task in the tasks list
+    Task selectedTask = tasks.Find(task => task.name == selectedTaskName);
+
+
+        // Update the taskNameInput field with the selected task name
+        taskNameInput.text = selectedTaskName;
+
+        // Set the due time in hours to complete input field
+        hoursToCompleteScrollbar.value = selectedTask.hoursToComplete;
+
+        // Set the color picker to the selected task's color
+        colorPicker.selectedColor = selectedTask.taskColor;
+        colorIndicator.color = selectedTask.taskColor; // Update color indicator
+
+        // Hide the dropdown after selecting a task
+        taskSuggestionsDropdown.gameObject.SetActive(false);
+    
+}
 
     private float GetSavedSliderValue(string taskName)
     {
