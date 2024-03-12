@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Collections;
+using System.Linq;
 
 [System.Serializable]
 public class Task
@@ -56,7 +57,6 @@ public class TimeManager : MonoBehaviour
     private Dictionary<string, bool> suggestedTasks = new Dictionary<string, bool>();
 
     public TMP_InputField taskNameInput;
-    public TMP_InputField hoursToCompleteInput;
 
     public TMP_Dropdown taskSuggestionsDropdown; // Reference to the dropdown UI element
 
@@ -152,9 +152,13 @@ public class TimeManager : MonoBehaviour
 
         // Save the updated removed tasks string back to PlayerPrefs
         PlayerPrefs.SetString("RemovedTasks", removedTasksString);
+
+        // Save the due hours to complete and color separately
+        string savedTaskInfo = $"{removedTask.hoursToComplete}|{ColorUtility.ToHtmlStringRGB(removedTask.taskColor)}";
+        PlayerPrefs.SetString(removedTask.name + "_SavedTaskInfo", savedTaskInfo);
+
         PlayerPrefs.Save();
     }
-
 
 
     public void AddTask()
@@ -190,7 +194,6 @@ public class TimeManager : MonoBehaviour
         StartCoroutine(CountdownTask(timerSlider, dueDate, remainingTimeSeconds, savedSliderValue));
 
         taskNameInput.text = "";
-        hoursToCompleteInput.text = "";
 
         SaveTasks();
 
@@ -217,7 +220,7 @@ public class TimeManager : MonoBehaviour
 
     private void TaskNameInputChange()
     {
-        string inputText = taskNameInput.text;
+        string inputText = taskNameInput.text.ToLower(); // Convert input text to lowercase
 
         // Check if input text is empty
         if (string.IsNullOrEmpty(inputText))
@@ -231,7 +234,7 @@ public class TimeManager : MonoBehaviour
         List<string> allTaskNames = new List<string>();
         foreach (Task task in tasks)
         {
-            allTaskNames.Add(task.name);
+            allTaskNames.Add(task.name.ToLower()); // Convert task name to lowercase
         }
 
         // Get removed task names from PlayerPrefs
@@ -243,19 +246,12 @@ public class TimeManager : MonoBehaviour
             {
                 string[] info = taskInfo.Split('|');
                 string taskName = info[0];
-                allTaskNames.Add(taskName);
+                allTaskNames.Add(taskName.ToLower()); // Convert removed task name to lowercase
             }
         }
 
-        // Filter suggestions based on input text
-        List<string> suggestions = new List<string>();
-        foreach (string taskName in allTaskNames)
-        {
-            if (taskName.StartsWith(inputText))
-            {
-                suggestions.Add(taskName);
-            }
-        }
+        // Filter suggestions based on input text (case-insensitive)
+        List<string> suggestions = allTaskNames.Where(taskName => taskName.StartsWith(inputText)).ToList();
 
         // Display suggestions in dropdown if any
         if (suggestions.Count > 0)
@@ -277,29 +273,53 @@ public class TimeManager : MonoBehaviour
     }
 
 
-   public void DisplaySuggestedOnClick(int index)
-{
-    // Get the selected task name from the dropdown options
-    string selectedTaskName = taskSuggestionsDropdown.options[index].text;
 
-    // Find the task in the tasks list
-    Task selectedTask = tasks.Find(task => task.name == selectedTaskName);
+    public void DisplaySuggestedOnClick(int index)
+    {
+        // Get the selected task name from the dropdown options
+        string selectedTaskName = taskSuggestionsDropdown.options[index].text;
+
+        // Find the task in the tasks list
+        Task selectedTask = tasks.Find(task => task.name == selectedTaskName);
+
+        // Retrieve the saved task information from PlayerPrefs
+        string savedTaskInfo = PlayerPrefs.GetString(selectedTaskName + "_SavedTaskInfo", "");
+
+        if (!string.IsNullOrEmpty(savedTaskInfo))
+        {
+            // Split the saved task information into parts
+            string[] parts = savedTaskInfo.Split('|');
+
+            // Parse the due hours to complete and color from the saved task information
+            int dueHoursToComplete = int.Parse(parts[0]);
+            Color dueTaskColor;
+            ColorUtility.TryParseHtmlString("#" + parts[1], out dueTaskColor);
+
+            // Update the taskNameInput field with the selected task name
+            taskNameInput.text = selectedTaskName;
+
+            // Calculate the normalized value for the scrollbar
+            float normalizedValue = (float)dueHoursToComplete / 24f; // Assuming 24 hours for a full day
+
+            // Set the scrollbar value
+            hoursToCompleteScrollbar.value = normalizedValue;
+
+            // Set the color picker to the selected task's color
+            colorPicker.selectedColor = dueTaskColor;
+            colorIndicator.color = dueTaskColor; // Update color indicator
+
+            // Hide the dropdown after selecting a task
+            taskSuggestionsDropdown.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("No saved task information found for task: " + selectedTaskName);
+        }
+    }
 
 
-        // Update the taskNameInput field with the selected task name
-        taskNameInput.text = selectedTaskName;
 
-        // Set the due time in hours to complete input field
-        hoursToCompleteScrollbar.value = selectedTask.hoursToComplete;
 
-        // Set the color picker to the selected task's color
-        colorPicker.selectedColor = selectedTask.taskColor;
-        colorIndicator.color = selectedTask.taskColor; // Update color indicator
-
-        // Hide the dropdown after selecting a task
-        taskSuggestionsDropdown.gameObject.SetActive(false);
-    
-}
 
     private float GetSavedSliderValue(string taskName)
     {
