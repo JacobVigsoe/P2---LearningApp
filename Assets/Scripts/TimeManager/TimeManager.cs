@@ -10,15 +10,17 @@ using System.Linq;
 public class Task
 {
     public string name;
+    public string groupName; // New property to store the task group name
     public int hoursToComplete;
     public DateTime dueDate;
     public float remainingTimeSeconds;
     public float savedSliderValue;
     public Color taskColor; // New property to store task color
 
-    public Task(string _name, int _hoursToComplete, DateTime _dueDate, Color _taskColor)
+    public Task(string _name, string _groupName, int _hoursToComplete, DateTime _dueDate, Color _taskColor)
     {
         name = _name;
+        groupName = _groupName; // Initialize group name
         hoursToComplete = _hoursToComplete;
         dueDate = _dueDate;
         remainingTimeSeconds = CalculateRemainingTime();
@@ -55,6 +57,7 @@ public class TimeManager : MonoBehaviour
 {
     public List<Task> tasks = new List<Task>();
     private Dictionary<string, bool> suggestedTasks = new Dictionary<string, bool>();
+    private Dictionary<string, Transform> taskGroupParents = new Dictionary<string, Transform>();
 
     public TMP_InputField taskNameInput;
 
@@ -68,11 +71,13 @@ public class TimeManager : MonoBehaviour
     public Color gizmoColor = Color.blue;
     public int maxColumns = 3;
     public Scrollbar hoursToCompleteScrollbar;
+    public TMP_InputField groupNameInput; // Reference to input field for task group name
 
     public ColorPicker colorPicker; // Reference to the color picker UI element
     public Image colorIndicator; // Reference to the UI element for color indication
     public Color defaultColor = Color.white; // Default color if none is selected
     private Color selectedColor;
+    public VerticalLayoutGroup verticalLayoutGroup;
 
     private const string TaskInfosKey = "TaskInfos";
     private void Start()
@@ -164,20 +169,26 @@ public class TimeManager : MonoBehaviour
     public void AddTask()
     {
         string taskName = taskNameInput.text;
+        string groupName = groupNameInput.text; // Retrieve the task group name from input field
         int hoursToComplete = Mathf.RoundToInt(hoursToCompleteScrollbar.value * 24);
         DateTime dueDate = DateTime.Now.AddHours(hoursToComplete);
 
         // Retrieve the selected color from the color picker
         Color taskColor = colorPicker.SelectedColor;
 
-        tasks.Add(new Task(taskName, hoursToComplete, dueDate, taskColor)); // Pass the color to the Task constructor
+        tasks.Add(new Task(taskName, groupName, hoursToComplete, dueDate, taskColor)); // Pass the group name to the Task constructor
 
         int rowIndex = (tasks.Count - 1) / maxColumns;
         int columnIndex = (tasks.Count - 1) % maxColumns;
 
         Vector3 taskPosition = tasksParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
 
-        GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, tasksParent);
+        // Get or create the task group parent
+        StartCoroutine(SetTaskParentGroupComponents(groupName));
+
+        Transform groupParent = taskGroupParents[groupName]; // Retrieve the created or existing task group parent
+
+        GameObject newTaskObject = Instantiate(taskPrefab, tasksParent.GetChild(1)); // Assuming the task parent group's transform is the second child
         TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
         newTaskPrefab.SetTaskInfo(taskColor, taskName);
 
@@ -194,11 +205,88 @@ public class TimeManager : MonoBehaviour
         StartCoroutine(CountdownTask(timerSlider, dueDate, remainingTimeSeconds, savedSliderValue));
 
         taskNameInput.text = "";
+        groupNameInput.text = "";
 
         SaveTasks();
 
         // Add the task name to suggested tasks
         AddToSuggestedTasks(taskName);
+
+        StartCoroutine(UpdateScrollAreaGroups());
+    }
+
+
+    private Transform GetGroupParent(string groupName)
+    {
+        // Check if a parent object exists for the specified group name, if not, create one
+        GameObject groupParent = GameObject.Find(groupName + "_Tasks");
+        if (groupParent == null)
+        {
+            groupParent = new GameObject(groupName + "_Tasks");
+        }
+        return groupParent.transform;
+    }
+
+
+
+    private IEnumerator SetTaskParentGroupComponents(string groupName)
+    {
+        yield return null; // Wait for one frame to ensure the object is fully created
+
+        if (!taskGroupParents.ContainsKey(groupName))
+        {
+            // Create the before image
+            GameObject beforeImageObj = new GameObject("BeforeImage");
+            Image beforeImage = beforeImageObj.AddComponent<Image>();
+            beforeImage.rectTransform.sizeDelta = new Vector2(100, 3); // Set height to 3
+            beforeImage.color = Color.red; // Set color to red
+            beforeImageObj.transform.SetParent(tasksParent); // Set the parent of the before image
+
+            // Create the task parent group
+            GameObject taskParentGroupObj = new GameObject("TaskParentGroup");
+            Transform taskParentGroup = taskParentGroupObj.transform;
+            taskParentGroup.SetParent(tasksParent); // Set the parent of the task parent group
+
+            // Add VerticalLayoutGroup component to taskParentGroup
+            VerticalLayoutGroup verticalLayoutGroup = taskParentGroupObj.AddComponent<VerticalLayoutGroup>();
+            // Set up VerticalLayoutGroup properties as needed...
+
+            // Add ContentSizeFitter component to taskParentGroup
+            ContentSizeFitter contentSizeFitter = taskParentGroupObj.AddComponent<ContentSizeFitter>();
+            contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; // Set vertical fit mode
+            contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained; // Set horizontal fit mode
+                                                                                       // Set up ContentSizeFitter properties as needed...
+
+            // Create the after image
+            GameObject afterImageObj = new GameObject("AfterImage");
+            Image afterImage = afterImageObj.AddComponent<Image>();
+            afterImage.rectTransform.sizeDelta = new Vector2(100, 3); // Set height to 3
+            afterImage.color = Color.red; // Set color to red
+            afterImageObj.transform.SetParent(tasksParent); // Set the parent of the after image
+
+            // Add the group parent to the dictionary
+            taskGroupParents.Add(groupName, taskParentGroup);
+
+            Debug.Log("Dictionary now contains: ");
+            foreach (var kvp in taskGroupParents)
+            {
+                Debug.Log(kvp.Key);
+            }
+        }
+
+        // Return the task parent group after it's created
+        yield return taskGroupParents[groupName];
+    }
+
+
+    private IEnumerator UpdateScrollAreaGroups()
+    {
+        verticalLayoutGroup.spacing = 2.01f;
+
+        // Wait for a specific amount of time
+        yield return new WaitForSeconds(0.01f);
+
+        verticalLayoutGroup.spacing = 2f;
 
     }
 
@@ -423,6 +511,7 @@ public class TimeManager : MonoBehaviour
                 float sliderValue = float.Parse(info[3].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
                 float savedSliderValue = float.Parse(info[4].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
                 Color color = Color.white; // Default color in case parsing fails
+                string groupName = groupNameInput.text;
 
                 // Check if there is color information available
                 if (info.Length > 5)
@@ -439,7 +528,7 @@ public class TimeManager : MonoBehaviour
                 Debug.Log("Color: " + color);
 
                 DateTime dueDate = DateTime.Now.AddSeconds(remainingTimeSeconds);
-                Task task = new Task(taskName, hoursToComplete, dueDate, color);
+                Task task = new Task(taskName, groupName, hoursToComplete, dueDate, color);
                 task.remainingTimeSeconds = remainingTimeSeconds;
                 task.savedSliderValue = savedSliderValue;
                 task.taskColor = color; // Assign the parsed color to the task
