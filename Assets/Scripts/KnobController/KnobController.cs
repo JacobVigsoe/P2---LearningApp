@@ -1,59 +1,58 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using TMPro;
 
-public class KnobController : MonoBehaviour
+public class KnobController : MonoBehaviour, IPointerDownHandler, IDragHandler
 {
-    public GameObject knobPrefab;
-    public Vector3 circleCenter;
-    public float circleRadius;
-    public int numberOfKnobs = 10; // Adjust as needed
-    public float knobSize = 1f; // Default knob size
-    public float zPosition = 0f; // Default Z position
+    private Vector2 lastMousePos;
+    private Vector2 objectCenter;
+    private float timer = 0f;
+    [SerializeField] private float AddTimeAmount = 1f;
+    [SerializeField] private float timerChangeRate = 0.5f; // Adjust this value to change the rate of timer change
 
-    private bool isDragging = false;
-    private Vector3 previousMousePosition;
+    public TextMeshProUGUI timerText; // Reference to the TextMeshPro object
 
-    private void Start()
+    public void OnPointerDown(PointerEventData eventData)
     {
-        SpawnKnobs();
+        lastMousePos = eventData.position;
+        objectCenter = RectTransformUtility.WorldToScreenPoint(eventData.pressEventCamera, transform.position);
     }
 
-    private void Update()
+    public void OnDrag(PointerEventData eventData)
     {
-        if (isDragging)
+        Vector2 currentMousePos = eventData.position;
+
+        // Calculate angles
+        Vector2 lastDir = lastMousePos - objectCenter;
+        Vector2 currentDir = currentMousePos - objectCenter;
+        float angleChange = Vector2.SignedAngle(lastDir, currentDir);
+
+
+        if (angleChange > 0 && timer > 0)
         {
-            Vector3 currentMousePosition = Input.mousePosition;
-            Vector3 mouseDelta = currentMousePosition - previousMousePosition;
-            float angleDelta = mouseDelta.x * 0.1f; // Adjust sensitivity as needed
-
-            transform.Rotate(Vector3.forward, angleDelta);
-
-            previousMousePosition = currentMousePosition;
+            // Counter Clockwise rotation
+            timer -= AddTimeAmount * timerChangeRate; //fjerner 1 fra timeren basered på hvordan man roterer objectet
         }
-    }
 
-    private void SpawnKnobs()
-    {
-        float angleIncrement = 360f / numberOfKnobs;
 
-        for (int i = 0; i < numberOfKnobs; i++)
+        if (angleChange < 0)
         {
-            float angle = i * angleIncrement * Mathf.Deg2Rad;
-            Vector3 spawnPosition = circleCenter + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)) * circleRadius;
-            spawnPosition.z = zPosition; // Set Z position
-            GameObject newKnob = Instantiate(knobPrefab, spawnPosition, Quaternion.identity);
-            newKnob.transform.localScale = new Vector3(knobSize, knobSize, 1f); // Set knob size
-            newKnob.transform.parent = transform; // Set the knob's parent to keep the hierarchy clean
+            // Clockwise rotation
+            timer += AddTimeAmount * timerChangeRate; // adder 1 til timeren basered på hvordan man roterer objectet
         }
-    }
 
-    private void OnMouseDown()
-    {
-        isDragging = true;
-        previousMousePosition = Input.mousePosition;
-    }
+        // Update TextMeshPro text
+        if (timerText != null)
+        {
+            float hours = Mathf.Floor(timer / 3600);
+            float remainingMinutes = Mathf.Floor((timer % 3600) / 60);
+            timerText.text = string.Format("{0:00}:{1:00}", hours, remainingMinutes);
+        }
 
-    private void OnMouseUp()
-    {
-        isDragging = false;
+        // Apply rotation
+        transform.Rotate(Vector3.forward, angleChange);
+
+        // Update last mouse position
+        lastMousePos = currentMousePos;
     }
 }
