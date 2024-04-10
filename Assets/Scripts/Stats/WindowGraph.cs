@@ -30,17 +30,19 @@ public class WindowGraph : MonoBehaviour
 
         List<int> ValueList = new List<int>() { 5, 98, 56, 45, 30, 22, 17, 15, 12, 17, 25, 27, 37, 40, 36, 44, 61, 50, 40, 30, 20, 10, 23, 25, 29, 45, 12, 13, 19, 23, 30, 40, 55, 46, 67, 76, 78, 89, 90};
 
-        ShowGraph(ValueList, ShowLastListAmount, (int _i) => "Day "+(_i+1), (float _f) => "$" + Mathf.RoundToInt(_f));
 
-      /*  FunctionPeriodic.Create(() =>
+
+        ShowGraph(ValueList, ShowLastListAmount, (int _i) => "D "+(_i+1), (float _f) => "$" + Mathf.RoundToInt(_f));
+
+        FunctionPeriodic.Create(() =>
         {
             ValueList.Clear();
             for (int i = 0; i<15; i++)
             {
                 ValueList.Add(UnityEngine.Random.Range(0, 500));
             }
-            ShowGraph(ValueList, (int _i) => "Day " + (_i + 1), (float _f) => "$" + Mathf.RoundToInt(_f));
-        }, .5f); //trigger every .5 seconds */
+            ShowGraph(ValueList, ShowLastListAmount, (int _i) => "Day " + (_i + 1), (float _f) => "$" + Mathf.RoundToInt(_f));
+        }, .5f); //trigger every .5 seconds 
     }
 
     private GameObject CreateCircle(Vector2 anchoredPosition) 
@@ -132,6 +134,7 @@ public class WindowGraph : MonoBehaviour
             labelX.SetParent(graphContainer);
             labelX.gameObject.SetActive(true);
             labelX.anchoredPosition3D = new Vector3(xPosition, -7f, 0f);
+            labelX.localScale = Vector3.one;
             labelX.GetComponent<TMP_Text>().text = getAxisLabelX(i);
             gameObjectList.Add(labelX.gameObject);
 
@@ -152,6 +155,7 @@ public class WindowGraph : MonoBehaviour
             labelY.gameObject.SetActive(true);
             float normalizedValue = i * 1f / seperatorCount;
             labelY.anchoredPosition3D = new Vector3(-7f, normalizedValue * graphHeight, 0f);
+            labelY.localScale = Vector3.one;
             labelY.GetComponent<TMP_Text>().text = getAxisLabelY(yMinimum + (normalizedValue * (yMaximum - yMinimum)));
             gameObjectList.Add(labelY.gameObject);
 

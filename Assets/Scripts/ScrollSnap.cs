@@ -11,41 +11,46 @@ public class ScrollSnap : MonoBehaviour
     public float padding = 80f; // Padding applied to the viewport's Vertical Layout Group
     public float snapSpeed = 10f; // Snapping speed
 
+    private int interval = 5; // Interval between values
+
     void Start()
     {
         int textLength = texts.Length;
         distance = new float[textLength];
+
+        // Assign values to the text elements based on the interval
+        for (int i = 0; i < textLength; i++)
+        {
+            int value = i * interval; // Starting from 0 with the specified interval
+            texts[i].text = value.ToString();
+        }
     }
 
     void Update()
     {
-      
-        
+        if (!dragging)
+        {
             // Calculate distances of each text element from the center vertically
             for (int i = 0; i < texts.Length; i++)
             {
                 distance[i] = Mathf.Abs(center.position.y - texts[i].transform.position.y);
             }
-        
-      
 
-        // Find the closest text element
-        float minDistance = Mathf.Min(distance);
-        int minTextIndex = 0;
-        for (int i = 0; i < distance.Length; i++)
-        {
-            if (distance[i] == minDistance)
+            // Find the closest text element
+            float minDistance = Mathf.Min(distance);
+            int minTextIndex = 0;
+            for (int i = 0; i < distance.Length; i++)
             {
-                minTextIndex = i;
-                break;
+                if (distance[i] == minDistance)
+                {
+                    minTextIndex = i;
+                    break;
+                }
             }
-        }
-      
-        
+
             // Snap to the closest text element with padding adjustment and snapping speed
             LerpToText(minTextIndex, padding, snapSpeed);
-        
-        
+        }
     }
 
     void LerpToText(int textIndex, float padding, float speed)
@@ -67,5 +72,21 @@ public class ScrollSnap : MonoBehaviour
     public void EndDrag()
     {
         dragging = false;
+    }
+
+    // Method to get the value of the centered text element
+    public int GetCenteredValue()
+    {
+        int minTextIndex = 0;
+        float minDistance = Mathf.Min(distance);
+        for (int i = 0; i < distance.Length; i++)
+        {
+            if (distance[i] == minDistance)
+            {
+                minTextIndex = i;
+                break;
+            }
+        }
+        return minTextIndex * interval;
     }
 }
