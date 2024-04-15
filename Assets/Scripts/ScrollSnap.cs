@@ -11,7 +11,7 @@ public class ScrollSnap : MonoBehaviour
     public float padding = 80f; // Padding applied to the viewport's Vertical Layout Group
     public float snapSpeed = 10f; // Snapping speed
 
-    private int interval = 5; // Interval between values
+    [SerializeField] private int interval = 1; // Interval between values
 
     void Start()
     {
