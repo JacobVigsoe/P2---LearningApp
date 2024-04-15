@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.IO;
 
 public class CountdownTimer : MonoBehaviour
 {
@@ -9,9 +10,13 @@ public class CountdownTimer : MonoBehaviour
     private float originalTime; // Original time picked when starting the timer
     private float currentTime; // Current time left in the countdown
     private bool isCountingDown = false; // Flag to track if the countdown is active
+    private AccuracyManager accuracyManager;
+    private WindowGraph windowGraph;
 
     void Start()
     {
+        accuracyManager = GameObject.FindObjectOfType<AccuracyManager>();
+        windowGraph = GameObject.FindObjectOfType<WindowGraph>();
         ResetTimer();
     }
 
@@ -51,7 +56,12 @@ public class CountdownTimer : MonoBehaviour
         // Calculate accuracy percentage based on the inverse ratio of remaining time to original time
         float accuracyPercentage = 100f * (1f - (currentTime / originalTime));
         Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
+
+        accuracyManager.SaveAccuracyToCSV(accuracyPercentage);
+        windowGraph.UpdateGraph();
     }
+
+   
 
     public void ResetTimer()
     {

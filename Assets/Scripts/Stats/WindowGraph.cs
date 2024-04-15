@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using CodeMonkey.Utils;
 using TMPro;
+using System.Linq;
 
 public class WindowGraph : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class WindowGraph : MonoBehaviour
 
     [SerializeField] private int ShowLastListAmount = -1;
 
+    private List<int> ValueList;
+
     private void Awake()
     {
         graphContainer = transform.Find("graphContainer").GetComponent<RectTransform>();
@@ -27,22 +30,24 @@ public class WindowGraph : MonoBehaviour
         dashTemplateY = graphContainer.Find("dashTemplateY").GetComponent<RectTransform>();
         gameObjectList = new List<GameObject>();
 
+    }
 
-        List<int> ValueList = new List<int>() { 5, 98, 56, 45, 30, 22, 17, 15, 12, 17, 25, 27, 37, 40, 36, 44, 61, 50, 40, 30, 20, 10, 23, 25, 29, 45, 12, 13, 19, 23, 30, 40, 55, 46, 67, 76, 78, 89, 90};
+    private void Start()
+    {
+        // Get accuracy values from AccuracyManager and convert them to integers
+        float[] accuracyValues = AccuracyManager.Instance.AccuracyValues;
+        ValueList = accuracyValues.Select(accuracy => Mathf.RoundToInt(accuracy)).ToList();
 
+        ShowGraph(ValueList, ShowLastListAmount, (int _i) => "D " + (_i + 1), (float _f) => "$" + Mathf.RoundToInt(_f));
+    }
 
+    public void UpdateGraph()
+    {
+        // Get accuracy values from AccuracyManager and convert them to integers
+        float[] accuracyValues = AccuracyManager.Instance.AccuracyValues;
+        ValueList = accuracyValues.Select(accuracy => Mathf.RoundToInt(accuracy)).ToList();
 
-        ShowGraph(ValueList, ShowLastListAmount, (int _i) => "D "+(_i+1), (float _f) => "$" + Mathf.RoundToInt(_f));
-
-        FunctionPeriodic.Create(() =>
-        {
-            ValueList.Clear();
-            for (int i = 0; i<15; i++)
-            {
-                ValueList.Add(UnityEngine.Random.Range(0, 500));
-            }
-            ShowGraph(ValueList, ShowLastListAmount, (int _i) => "Day " + (_i + 1), (float _f) => "$" + Mathf.RoundToInt(_f));
-        }, .5f); //trigger every .5 seconds 
+        ShowGraph(ValueList, ShowLastListAmount, (int _i) => "D " + (_i + 1), (float _f) => "$" + Mathf.RoundToInt(_f));
     }
 
     private GameObject CreateCircle(Vector2 anchoredPosition) 
