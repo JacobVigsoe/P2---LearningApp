@@ -10,44 +10,11 @@ using System.Linq;
 public class Task
 {
     public string name;
-    public string groupName; // New property to store the task group name
-    public int hoursToComplete;
-    public DateTime dueDate;
-    public float remainingTimeSeconds;
-    public float savedSliderValue;
-    public Color taskColor; // New property to store task color
 
-    public Task(string _name, string _groupName, int _hoursToComplete, DateTime _dueDate, Color _taskColor)
+    public Task(string _name)
     {
         name = _name;
-        groupName = _groupName; // Initialize group name
-        hoursToComplete = _hoursToComplete;
-        dueDate = _dueDate;
-        remainingTimeSeconds = CalculateRemainingTime();
-        savedSliderValue = CalculateSavedSliderValue();
-        taskColor = _taskColor;
-    }
 
-    // Method to calculate remaining time
-    public float CalculateRemainingTime()
-    {
-        TimeSpan timeRemaining = dueDate - DateTime.Now;
-        return Mathf.Max((float)timeRemaining.TotalSeconds, 0f);
-    }
-
-    // Method to update remaining time and saved slider value
-    public void UpdateRemainingTime()
-    {
-        remainingTimeSeconds = CalculateRemainingTime();
-        savedSliderValue = CalculateSavedSliderValue();
-    }
-
-    // Method to calculate saved slider value
-    public float CalculateSavedSliderValue()
-    {
-        // Calculate the slider value based on the remaining time and total hours to complete
-        float totalHoursInSeconds = hoursToComplete * 3600; // Convert hours to seconds
-        return remainingTimeSeconds / totalHoursInSeconds;
     }
 
 
@@ -71,12 +38,7 @@ public class TimeManager : MonoBehaviour
     public Color gizmoColor = Color.blue;
     public int maxColumns = 3;
     public Scrollbar hoursToCompleteScrollbar;
-    public TMP_InputField groupNameInput; // Reference to input field for task group name
 
-    public ColorPicker colorPicker; // Reference to the color picker UI element
-    public Image colorIndicator; // Reference to the UI element for color indication
-    public Color defaultColor = Color.white; // Default color if none is selected
-    private Color selectedColor;
     public VerticalLayoutGroup verticalLayoutGroup;
 
     private const string TaskInfosKey = "TaskInfos";
@@ -84,31 +46,6 @@ public class TimeManager : MonoBehaviour
     {
         TaskPrefab.TaskDeleteEvent += OnTaskRemove; // Subscribe to the task delete event
         LoadTasks();
-        InitializeAutocomplete();
-    }
-
-    public void PickedColorIndicator()
-    {
-        // Start a coroutine to update the color indicator after a short delay
-        StartCoroutine(UpdateColorIndicator());
-    }
-    private IEnumerator UpdateColorIndicator()
-    {
-        // Wait for a short delay (adjust the time as needed)
-        yield return new WaitForSeconds(0.01f); // Adjust the delay time if necessary
-
-        // Get the selected color from the color picker
-        selectedColor = colorPicker.SelectedColor;
-
-        // Update the color of the color indicator
-        if (colorIndicator != null)
-        {
-            colorIndicator.color = selectedColor;
-        }
-        else
-        {
-            Debug.LogError("Color indicator is not assigned.");
-        }
     }
 
     private void OnTaskRemove(string taskName)
@@ -152,15 +89,12 @@ public class TimeManager : MonoBehaviour
         }
 
         // Append the information of the removed task to the existing string
-        string taskInfo = $"{removedTask.name}|{removedTask.hoursToComplete}|{removedTask.remainingTimeSeconds}|{removedTask.savedSliderValue}";
+        string taskInfo = $"{removedTask.name}";
         removedTasksString += taskInfo;
 
         // Save the updated removed tasks string back to PlayerPrefs
         PlayerPrefs.SetString("RemovedTasks", removedTasksString);
 
-        // Save the due hours to complete and color separately
-        string savedTaskInfo = $"{removedTask.hoursToComplete}|{ColorUtility.ToHtmlStringRGB(removedTask.taskColor)}";
-        PlayerPrefs.SetString(removedTask.name + "_SavedTaskInfo", savedTaskInfo);
 
         PlayerPrefs.Save();
     }
@@ -169,113 +103,24 @@ public class TimeManager : MonoBehaviour
     public void AddTask()
     {
         string taskName = taskNameInput.text;
-        string groupName = groupNameInput.text; // Retrieve the task group name from input field
-        int hoursToComplete = Mathf.RoundToInt(hoursToCompleteScrollbar.value * 24);
-        DateTime dueDate = DateTime.Now.AddHours(hoursToComplete);
 
-        // Retrieve the selected color from the color picker
-        Color taskColor = colorPicker.SelectedColor;
-
-        tasks.Add(new Task(taskName, groupName, hoursToComplete, dueDate, taskColor)); // Pass the group name to the Task constructor
+        tasks.Add(new Task(taskName)); // Pass the group name to the Task constructor
 
         int rowIndex = (tasks.Count - 1) / maxColumns;
         int columnIndex = (tasks.Count - 1) % maxColumns;
 
         Vector3 taskPosition = tasksParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
 
-        // Get or create the task group parent
-        StartCoroutine(SetTaskParentGroupComponents(groupName));
-
-        Transform groupParent = taskGroupParents[groupName]; // Retrieve the created or existing task group parent
-
         GameObject newTaskObject = Instantiate(taskPrefab, tasksParent.GetChild(1)); // Assuming the task parent group's transform is the second child
         TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
-        newTaskPrefab.SetTaskInfo(taskColor, taskName);
+        newTaskPrefab.SetTaskInfo(taskName);
 
-        Slider timerSlider = newTaskObject.GetComponentInChildren<Slider>();
-        timerSlider.maxValue = hoursToComplete;
-
-        // Get the saved slider value for this task
-        float savedSliderValue = GetSavedSliderValue(taskName);
-
-        // Calculate remaining time
-        float remainingTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
-
-        // Start the countdown coroutine with the correct remaining time and saved slider value
-        StartCoroutine(CountdownTask(timerSlider, dueDate, remainingTimeSeconds, savedSliderValue));
 
         taskNameInput.text = "";
-        groupNameInput.text = "";
 
         SaveTasks();
 
-        // Add the task name to suggested tasks
-        AddToSuggestedTasks(taskName);
-
         StartCoroutine(UpdateScrollAreaGroups());
-    }
-
-
-    private Transform GetGroupParent(string groupName)
-    {
-        // Check if a parent object exists for the specified group name, if not, create one
-        GameObject groupParent = GameObject.Find(groupName + "_Tasks");
-        if (groupParent == null)
-        {
-            groupParent = new GameObject(groupName + "_Tasks");
-        }
-        return groupParent.transform;
-    }
-
-
-
-    private IEnumerator SetTaskParentGroupComponents(string groupName)
-    {
-        yield return null; // Wait for one frame to ensure the object is fully created
-
-        if (!taskGroupParents.ContainsKey(groupName))
-        {
-            // Create the before image
-            GameObject beforeImageObj = new GameObject("BeforeImage");
-            Image beforeImage = beforeImageObj.AddComponent<Image>();
-            beforeImage.rectTransform.sizeDelta = new Vector2(100, 3); // Set height to 3
-            beforeImage.color = Color.red; // Set color to red
-            beforeImageObj.transform.SetParent(tasksParent); // Set the parent of the before image
-
-            // Create the task parent group
-            GameObject taskParentGroupObj = new GameObject("TaskParentGroup");
-            Transform taskParentGroup = taskParentGroupObj.transform;
-            taskParentGroup.SetParent(tasksParent); // Set the parent of the task parent group
-
-            // Add VerticalLayoutGroup component to taskParentGroup
-            VerticalLayoutGroup verticalLayoutGroup = taskParentGroupObj.AddComponent<VerticalLayoutGroup>();
-            // Set up VerticalLayoutGroup properties as needed...
-
-            // Add ContentSizeFitter component to taskParentGroup
-            ContentSizeFitter contentSizeFitter = taskParentGroupObj.AddComponent<ContentSizeFitter>();
-            contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; // Set vertical fit mode
-            contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained; // Set horizontal fit mode
-                                                                                       // Set up ContentSizeFitter properties as needed...
-
-            // Create the after image
-            GameObject afterImageObj = new GameObject("AfterImage");
-            Image afterImage = afterImageObj.AddComponent<Image>();
-            afterImage.rectTransform.sizeDelta = new Vector2(100, 3); // Set height to 3
-            afterImage.color = Color.red; // Set color to red
-            afterImageObj.transform.SetParent(tasksParent); // Set the parent of the after image
-
-            // Add the group parent to the dictionary
-            taskGroupParents.Add(groupName, taskParentGroup);
-
-            Debug.Log("Dictionary now contains: ");
-            foreach (var kvp in taskGroupParents)
-            {
-                Debug.Log(kvp.Key);
-            }
-        }
-
-        // Return the task parent group after it's created
-        yield return taskGroupParents[groupName];
     }
 
 
@@ -288,135 +133,6 @@ public class TimeManager : MonoBehaviour
 
         verticalLayoutGroup.spacing = 2f;
 
-    }
-
-    private void InitializeAutocomplete()
-    {
-        foreach (Task task in tasks)
-        {
-            AddToSuggestedTasks(task.name);
-        }
-    }
-
-    private void AddToSuggestedTasks(string taskName)
-    {
-        if (!suggestedTasks.ContainsKey(taskName))
-        {
-            suggestedTasks.Add(taskName, true);
-        }
-    }
-
-    private void TaskNameInputChange()
-    {
-        string inputText = taskNameInput.text.ToLower(); // Convert input text to lowercase
-
-        // Check if input text is empty
-        if (string.IsNullOrEmpty(inputText))
-        {
-            // Hide the dropdown if input is empty
-            taskSuggestionsDropdown.gameObject.SetActive(false);
-            return; // Exit the method early
-        }
-
-        // Get all task names, including removed tasks from PlayerPrefs
-        List<string> allTaskNames = new List<string>();
-        foreach (Task task in tasks)
-        {
-            allTaskNames.Add(task.name.ToLower()); // Convert task name to lowercase
-        }
-
-        // Get removed task names from PlayerPrefs
-        string removedTasksString = PlayerPrefs.GetString("RemovedTasks", "");
-        if (!string.IsNullOrEmpty(removedTasksString))
-        {
-            string[] removedTaskInfos = removedTasksString.Split(',');
-            foreach (string taskInfo in removedTaskInfos)
-            {
-                string[] info = taskInfo.Split('|');
-                string taskName = info[0];
-                allTaskNames.Add(taskName.ToLower()); // Convert removed task name to lowercase
-            }
-        }
-
-        // Filter suggestions based on input text (case-insensitive)
-        List<string> suggestions = allTaskNames.Where(taskName => taskName.StartsWith(inputText)).ToList();
-
-        // Display suggestions in dropdown if any
-        if (suggestions.Count > 0)
-        {
-            // Show the dropdown
-            taskSuggestionsDropdown.gameObject.SetActive(true);
-
-            // Clear existing options
-            taskSuggestionsDropdown.ClearOptions();
-
-            // Add suggestions to dropdown options
-            taskSuggestionsDropdown.AddOptions(suggestions);
-        }
-        else
-        {
-            // Hide the dropdown if no suggestions
-            taskSuggestionsDropdown.gameObject.SetActive(false);
-        }
-    }
-
-
-
-    public void DisplaySuggestedOnClick(int index)
-    {
-        // Get the selected task name from the dropdown options
-        string selectedTaskName = taskSuggestionsDropdown.options[index].text;
-
-        // Find the task in the tasks list
-        Task selectedTask = tasks.Find(task => task.name == selectedTaskName);
-
-        // Retrieve the saved task information from PlayerPrefs
-        string savedTaskInfo = PlayerPrefs.GetString(selectedTaskName + "_SavedTaskInfo", "");
-
-        if (!string.IsNullOrEmpty(savedTaskInfo))
-        {
-            // Split the saved task information into parts
-            string[] parts = savedTaskInfo.Split('|');
-
-            // Parse the due hours to complete and color from the saved task information
-            int dueHoursToComplete = int.Parse(parts[0]);
-            Color dueTaskColor;
-            ColorUtility.TryParseHtmlString("#" + parts[1], out dueTaskColor);
-
-            // Update the taskNameInput field with the selected task name
-            taskNameInput.text = selectedTaskName;
-
-            // Calculate the normalized value for the scrollbar
-            float normalizedValue = (float)dueHoursToComplete / 24f; // Assuming 24 hours for a full day
-
-            // Set the scrollbar value
-            hoursToCompleteScrollbar.value = normalizedValue;
-
-            // Set the color picker to the selected task's color
-            colorPicker.selectedColor = dueTaskColor;
-            colorIndicator.color = dueTaskColor; // Update color indicator
-
-            // Hide the dropdown after selecting a task
-            taskSuggestionsDropdown.gameObject.SetActive(false);
-        }
-        else
-        {
-            Debug.LogWarning("No saved task information found for task: " + selectedTaskName);
-        }
-    }
-
-
-
-
-
-    private float GetSavedSliderValue(string taskName)
-    {
-        // Retrieve the saved slider value from PlayerPrefs using the task's name
-        if (PlayerPrefs.HasKey(taskName + "_SliderValue"))
-        {
-            return PlayerPrefs.GetFloat(taskName + "_SliderValue");
-        }
-        return 0f; // Return 0 if the saved slider value doesn't exist
     }
 
 
@@ -432,23 +148,12 @@ public class TimeManager : MonoBehaviour
 
         foreach (Task task in tasks)
         {
-            // Update the remaining time for the task
-            task.UpdateRemainingTime();
-
-            // Get the slider value from the task's slider component
-            Slider timerSlider = FindSliderForTask(task);
-            float sliderValue = timerSlider != null ? timerSlider.value : 0f;
 
             // Concatenate the task information with remaining time, slider value, and color using '|' as delimiter
-            string taskInfo = $"{task.name}|{task.hoursToComplete}|{task.remainingTimeSeconds.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{sliderValue.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{task.savedSliderValue.ToString("0.######", System.Globalization.CultureInfo.InvariantCulture)}|{ColorUtility.ToHtmlStringRGB(task.taskColor)}";
+            string taskInfo = $"{task.name}";
 
             // Add the task information to the list
             taskInfos.Add(taskInfo);
-
-            // Save the slider value for this task separately
-            PlayerPrefs.SetFloat(task.name + "_SliderValue", sliderValue);
-            PlayerPrefs.SetFloat(task.name + "_SavedSliderValue", task.savedSliderValue); // Save the saved slider value
-            PlayerPrefs.SetString(task.name + "_Color", ColorUtility.ToHtmlStringRGB(task.taskColor)); // Save the color
         }
 
         string taskInfosString = string.Join(",", taskInfos);
@@ -456,9 +161,9 @@ public class TimeManager : MonoBehaviour
         PlayerPrefs.Save();
 
         Debug.Log("Task information saved: " + taskInfosString);
+
+        LoadTasks();
     }
-
-
 
 
 
@@ -466,27 +171,6 @@ public class TimeManager : MonoBehaviour
     {
         SaveTasks(); // Save remaining time for tasks
     }
-
-
-    private Slider FindSliderForTask(Task task)
-    {
-        foreach (Transform child in tasksParent)
-        {
-            TaskPrefab taskPrefab = child.GetComponent<TaskPrefab>();
-            if (taskPrefab != null && taskPrefab.TaskName == task.name)
-            {
-                Slider timerSlider = child.GetComponentInChildren<Slider>();
-                if (timerSlider == null)
-                {
-                    Debug.LogError("Slider component not found for task: " + task.name);
-                }
-                return timerSlider;
-            }
-        }
-        return null;
-    }
-
-
 
 
     public void LoadTasks()
@@ -506,49 +190,20 @@ public class TimeManager : MonoBehaviour
 
                 string[] info = taskInfo.Split('|');
                 string taskName = info[0];
-                int hoursToComplete = int.Parse(info[1]);
-                float remainingTimeSeconds = float.Parse(info[2].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
-                float sliderValue = float.Parse(info[3].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
-                float savedSliderValue = float.Parse(info[4].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
-                Color color = Color.white; // Default color in case parsing fails
-                string groupName = groupNameInput.text;
 
-                // Check if there is color information available
-                if (info.Length > 5)
-                {
-                    // Parse the color information
-                    ColorUtility.TryParseHtmlString("#" + info[5], out color);
-                }
 
                 Debug.Log("Task name: " + taskName);
-                Debug.Log("Hours to complete: " + hoursToComplete);
-                Debug.Log("Remaining time seconds: " + remainingTimeSeconds);
-                Debug.Log("Slider value: " + sliderValue);
-                Debug.Log("Saved slider value: " + savedSliderValue);
-                Debug.Log("Color: " + color);
 
-                DateTime dueDate = DateTime.Now.AddSeconds(remainingTimeSeconds);
-                Task task = new Task(taskName, groupName, hoursToComplete, dueDate, color);
-                task.remainingTimeSeconds = remainingTimeSeconds;
-                task.savedSliderValue = savedSliderValue;
-                task.taskColor = color; // Assign the parsed color to the task
-
-                // Set the saved slider value back to the task
-                task.savedSliderValue = PlayerPrefs.GetFloat(taskName + "_SavedSliderValue", sliderValue);
+                Task task = new Task(taskName);
 
                 tasks.Add(task);
 
-                if (DateTime.Now < dueDate)
-                {
-                    StartCoroutine(CountdownTask(task, savedSliderValue));
-                }
+
             }
 
             RecreateTaskPrefabs();
         }
     }
-
-
 
 
     private void RecreateTaskPrefabs()
@@ -566,78 +221,12 @@ public class TimeManager : MonoBehaviour
             Vector3 taskPosition = tasksParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
             GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, tasksParent);
             TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
-            newTaskPrefab.SetTaskInfo(task.taskColor, task.name); // Pass color information to TaskPrefab
+            newTaskPrefab.SetTaskInfo(task.name); // Pass color information to TaskPrefab
 
-            // Get the slider component inside the task prefab
-            Slider timerSlider = newTaskPrefab.GetComponentInChildren<Slider>();
-            if (timerSlider != null)
-            {
-                // Set the max value of the slider
-                timerSlider.maxValue = task.hoursToComplete;
-                // Set the slider value to the saved value
-                timerSlider.value = task.savedSliderValue;
-            }
 
-            // Start the countdown coroutine with the correct remaining time and saved slider value
-            StartCoroutine(CountdownTask(task, task.savedSliderValue));
         }
     }
 
 
-    private IEnumerator CountdownTask(Task task, float savedSliderValue)
-    {
-        Slider timerSlider = FindSliderForTask(task);
 
-
-        // Set the initial slider value to the saved value
-        timerSlider.value = savedSliderValue;
-
-        while (DateTime.Now < task.dueDate)
-        {
-            // Calculate the remaining time
-            float remainingTimeSeconds = (float)(task.dueDate - DateTime.Now).TotalSeconds;
-
-            // Calculate the slider value based on the remaining time and the total time
-            float sliderValue = Mathf.Clamp01(remainingTimeSeconds / (task.hoursToComplete * 3600)) * timerSlider.maxValue;
-
-            // Set the slider value
-            timerSlider.value = sliderValue;
-
-            yield return null;
-        }
-    }
-
-    private IEnumerator CountdownTask(Slider timerSlider, DateTime dueDate, float remainingTimeSeconds, float savedSliderValue)
-    {
-        // Check if the timer has already started
-        if (DateTime.Now < dueDate)
-        {
-            // Calculate the total time remaining
-            float totalTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
-
-
-            // Start the countdown from the saved slider value
-            while (DateTime.Now < dueDate)
-            {
-                // Update the remaining time
-                remainingTimeSeconds = (float)(dueDate - DateTime.Now).TotalSeconds;
-
-                // Calculate the slider value based on the remaining time and the total time
-                float sliderValue = Mathf.Clamp01(remainingTimeSeconds / totalTimeSeconds) * timerSlider.maxValue;
-
-                // Set the slider value
-                timerSlider.value = sliderValue;
-
-                yield return null;
-            }
-        }
-        else
-        {
-            // If the timer has already ended, set the slider value to its maximum
-            timerSlider.value = timerSlider.maxValue;
-        }
-    }
-
-
-  
 }
