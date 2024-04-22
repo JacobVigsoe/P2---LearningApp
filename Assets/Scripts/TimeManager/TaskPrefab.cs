@@ -51,9 +51,7 @@ public class TaskPrefab : MonoBehaviour
 
     public void OnDeleteButtonClick()
     {
-        StartCoroutine(WaitForAnimation());
-        targetRectTransform.DOAnchorPos(OffsetRight, AnimSpeed);
-        getXPTest.FinishedTaskXP();
+        uimanager.StartButton();
     }
 
     private IEnumerator WaitForAnimation()
