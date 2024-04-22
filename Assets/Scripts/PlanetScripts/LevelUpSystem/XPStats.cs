@@ -53,22 +53,5 @@ public class XPStats : MonoBehaviour
         CurrentLevel++;
         CurrentXP = 0;
         MaxXP += 100;
-
-        // Spawn a tree dynamically
-        SpawnTreeDynamically();
-    }
-
-    private void SpawnTreeDynamically()
-    {
-        spawnOnObjectScript.numberOfTreesToSpawn = 5;
-        if (spawnOnObjectScript != null)
-        {
-            // Call the SpawnTrees method of the SpawnOnObject script
-            spawnOnObjectScript.SpawnTrees();
-        }
-        else
-        {
-            Debug.LogError("SpawnOnObject script reference is not assigned.");
-        }
     }
 }

@@ -51,7 +51,7 @@ public class TaskPrefab : MonoBehaviour
 
     public void OnDeleteButtonClick()
     {
-        uimanager.StartButton();
+        uimanager.taskStatsMenu();
     }
 
     private IEnumerator WaitForAnimation()

@@ -13,7 +13,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private RectTransform mainMenu;
     [SerializeField] private RectTransform noteMenu;
     [SerializeField] private RectTransform analyticsMenu;
-    [SerializeField] private RectTransform timerMenu;
+    [SerializeField] private RectTransform ShopMenu;
+    [SerializeField] private RectTransform TaskStatsMenu;
+    [SerializeField] private RectTransform IdleMenu;
+    [SerializeField] private RectTransform TaskCompletedMenu;
 
     [Header("Notes")]
     [SerializeField] private GameObject notePrefab;
@@ -36,31 +39,70 @@ public class UIManager : MonoBehaviour
         mainMenu.DOAnchorPos(origin, animationSpeed);
     }
 
-    public void StartButton()
+    public void setTimeMenu ()
     {
-        mainMenu.DOAnchorPos(offsetleft, animationSpeed);
+        mainMenu.DOAnchorPos(origin, animationSpeed);
         noteMenu.DOAnchorPos(origin, animationSpeed);
         closeButton.DOAnchorPos(offsetDown, animationSpeed);
         analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
-        timerMenu.DOAnchorPos(offsetleft, animationSpeed);
+        ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
+        TaskStatsMenu.DOAnchorPos(origin, animationSpeed);
     }
     public void AnalyticsMenu()
     {
         analyticsMenu.DOAnchorPos(origin, animationSpeed);
         mainMenu.DOAnchorPos(offsetUp, animationSpeed);
         noteMenu.DOAnchorPos(offsetRight, animationSpeed);
-        timerMenu.DOAnchorPos(offsetleft, animationSpeed);
-
+        ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
+        TaskStatsMenu.DOAnchorPos(offsetRight, animationSpeed);
     }
 
-    public void TimerMenu()
+    public void shopMenu()
     {
-        timerMenu.DOAnchorPos(origin, animationSpeed);
+        ShopMenu.DOAnchorPos(origin, animationSpeed);
         mainMenu.DOAnchorPos(offsetRight, animationSpeed);
         noteMenu.DOAnchorPos(offsetRight, animationSpeed);
         closeButton.DOAnchorPos(offsetDown, animationSpeed);
         analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
+        TaskStatsMenu.DOAnchorPos(offsetRight, animationSpeed);
+        IdleMenu.DOAnchorPos(offsetRight, animationSpeed);
+        TaskCompletedMenu.DOAnchorPos(offsetRight, animationSpeed);
     }
+
+    public void taskStatsMenu()
+    {
+        ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
+        mainMenu.DOAnchorPos(origin, animationSpeed);
+        noteMenu.DOAnchorPos(offsetRight, animationSpeed);
+        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
+        TaskStatsMenu.DOAnchorPos(origin, animationSpeed);
+        IdleMenu.DOAnchorPos(offsetRight, animationSpeed);
+    }
+
+    public void idleMenu()
+    {
+        ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
+        mainMenu.DOAnchorPos(origin, animationSpeed);
+        noteMenu.DOAnchorPos(offsetRight, animationSpeed);
+        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
+        TaskStatsMenu.DOAnchorPos(origin, animationSpeed);
+        IdleMenu.DOAnchorPos(origin, animationSpeed);
+    }
+
+    public void taskCompletedMenu()
+    {
+        ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
+        mainMenu.DOAnchorPos(origin, animationSpeed);
+        noteMenu.DOAnchorPos(offsetRight, animationSpeed);
+        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
+        TaskStatsMenu.DOAnchorPos(origin, animationSpeed);
+        IdleMenu.DOAnchorPos(origin, animationSpeed);
+        TaskCompletedMenu.DOAnchorPos(origin, animationSpeed);
+    }
+
 
     void Update()
     {
@@ -81,7 +123,10 @@ public class UIManager : MonoBehaviour
         noteMenu.DOAnchorPos(offsetRight, animationSpeed);
         mainMenu.DOAnchorPos(origin, animationSpeed);
         analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
-        timerMenu.DOAnchorPos(offsetleft, animationSpeed);
+        ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
+        TaskStatsMenu.DOAnchorPos(offsetRight, animationSpeed);
+        IdleMenu.DOAnchorPos(offsetRight, animationSpeed);
+        TaskCompletedMenu.DOAnchorPos(offsetRight, animationSpeed);
     }
 
     public void NewNote()
