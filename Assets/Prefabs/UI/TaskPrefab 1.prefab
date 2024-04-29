@@ -459,7 +459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   taskNameText: {fileID: 435075616229994079}
-  deleteButton: {fileID: 6287307008799705634}
+  nextButton: {fileID: 6287307008799705634}
   targetRectTransform: {fileID: 684383380727459123}
   TargetScale: {x: 1, y: 1, z: 1}
   OffsetRight: {x: 600, y: 0}

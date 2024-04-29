@@ -8,7 +8,8 @@ using UnityEngine.Events;
 public class TaskPrefab : MonoBehaviour
 {
     public TMP_Text taskNameText;
-    public Button deleteButton; // Reference to the delete button
+    public Button nextButton; // Reference to the delete button
+    private TaskManager taskManager;
 
 
     //Animations
@@ -27,10 +28,11 @@ public class TaskPrefab : MonoBehaviour
 
     private void Start()
     {
+        taskManager = GameObject.FindObjectOfType<TaskManager>();
         getXPTest = GameObject.FindObjectOfType<GetXPTest>();
         uimanager = GameObject.FindObjectOfType<UIManager>();
         targetRectTransform.DOScale(TargetScale, AnimSpeed);
-        remainingTimeText = GameObject.FindWithTag("RemainingTimeText").GetComponent<TMP_Text>();
+        //remainingTimeText = GameObject.FindWithTag("RemainingTimeText").GetComponent<TMP_Text>();
 
     }
 
@@ -45,13 +47,14 @@ public class TaskPrefab : MonoBehaviour
         TaskName = taskName;
         taskNameText.text = taskName;
  
-        deleteButton.onClick.AddListener(OnDeleteButtonClick); // Subscribe to the button click event
+        nextButton.onClick.AddListener(OnButtonClick); // Subscribe to the button click event
     }
 
 
-    public void OnDeleteButtonClick()
+    public void OnButtonClick()
     {
         uimanager.taskStatsMenu();
+        taskManager.OpenTask(TaskName);
     }
 
     private IEnumerator WaitForAnimation()

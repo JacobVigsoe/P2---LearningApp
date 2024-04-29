@@ -10,6 +10,8 @@ public class TaskInfo
     public float avgTimeDeviation;
     public float avgPercentage;
     public string filePath;
+    public List<int> timeDeviations = new List<int>();
+    public List<int> percentages = new List<int>();
 }
 
 public class TaskManager : MonoBehaviour
@@ -31,7 +33,9 @@ public class TaskManager : MonoBehaviour
     public Vector3 spawnOffset = new Vector3(0, 0, 0);
 
     // Open task stuff
-
+    public TMP_Text title;
+    public TMP_Text avgTimeDeviation;
+    public TMP_Text avgPercentage;
 
     void Awake()
     {
@@ -39,9 +43,10 @@ public class TaskManager : MonoBehaviour
     }
     void Start()
     {
+        tasks = saveData.LoadTasks();
+        Debug.Log(tasks.Count); 
         ReCreateTasks();
     }
-
 
     public void AddTask()
     {
@@ -50,15 +55,20 @@ public class TaskManager : MonoBehaviour
             taskName = taskNameInput.text,
             avgTimeDeviation = 0,
             avgPercentage = 0,
-            filePath = filePath + "/" + taskNameInput.text + ".csv"
+            filePath = filePath + "/" + taskNameInput.text + ".json"
         });
-        ReCreateTasks();
+        saveData.SaveTasks(tasks[tasks.Count - 1]);
 
-        saveData.SaveTasks(tasks);
+        ReCreateTasks();
     }
 
     public void ReCreateTasks()
     {
+        foreach (Transform child in taskParent)
+        {
+            Destroy(child.gameObject);
+        }
+
         foreach (TaskInfo task in tasks)
         {
             int rowIndex = tasks.IndexOf(task);
@@ -70,9 +80,14 @@ public class TaskManager : MonoBehaviour
         }
     }
 
-    public void OpenTask()
+    public void OpenTask(string taskName)
     {
-        
+        if(taskName == tasks.Find(x => x.taskName == taskName).taskName)
+        {
+            title.text = taskName;
+            avgTimeDeviation.text = tasks.Find(x => x.taskName == taskName).avgTimeDeviation.ToString();
+            avgPercentage.text = tasks.Find(x => x.taskName == taskName).avgPercentage.ToString();
+        }
     }
 
 }
