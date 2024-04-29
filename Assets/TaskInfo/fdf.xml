@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ArrayOfTaskInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <TaskInfo>
+    <taskName />
+    <avgTimeDeviation>0</avgTimeDeviation>
+    <avgPercentage>0</avgPercentage>
+    <filePath>/Users/marcelkress/Desktop/Unity Projects/Medialogi/P2---LearningApp/Assets/TaskInfo/.xml</filePath>
+  </TaskInfo>
+  <TaskInfo>
+    <taskName>fdf</taskName>
+    <avgTimeDeviation>0</avgTimeDeviation>
+    <avgPercentage>0</avgPercentage>
+    <filePath>/Users/marcelkress/Desktop/Unity Projects/Medialogi/P2---LearningApp/Assets/TaskInfo/fdf.xml</filePath>
+  </TaskInfo>
+</ArrayOfTaskInfo>
