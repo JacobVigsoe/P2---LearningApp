@@ -10,10 +10,13 @@ public class CountdownTimer : MonoBehaviour
     private float currentTime; // Current time left in the countdown
     private bool isCountingDown = false; // Flag to track if the countdown is active
     private AccuracyManager accuracyManager;
+
+    private TaskManager taskManager;
     private WindowGraph windowGraph;
 
     void Start()
     {
+        taskManager = GameObject.FindObjectOfType<TaskManager>();
         accuracyManager = GameObject.FindObjectOfType<AccuracyManager>();
         windowGraph = GameObject.FindObjectOfType<WindowGraph>();
         ResetTimer();
@@ -58,7 +61,7 @@ public void StopTimer()
     }
     Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
 
-    accuracyManager.SaveAccuracyToCSV(accuracyPercentage);
+    taskManager.
     windowGraph.UpdateGraph();
 }
 
