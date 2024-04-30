@@ -61,7 +61,7 @@ public void StopTimer()
     }
     Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
 
-    taskManager.
+    taskManager.WriteToTask(timeDifference, accuracyPercentage);
     windowGraph.UpdateGraph();
 }
 
