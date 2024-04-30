@@ -56,6 +56,8 @@ public class TaskManager : MonoBehaviour
     public TMP_Text avgTimeDeviation;
     public TMP_Text avgPercentage;
 
+    public string lastClickedTask;
+
     void Awake()
     {
         filePath = Application.dataPath + "/TaskInfo";
@@ -93,7 +95,7 @@ public class TaskManager : MonoBehaviour
             Vector3 taskPosition = taskParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
             GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, taskParent);
             TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
-            newTaskPrefab.SetTaskInfo(task.taskName, task.avgTimeDeviation); // Pass color information to TaskPrefab
+            newTaskPrefab.SetTaskInfo(task.taskName, task.avgTimeDeviation); // Pass info to TaskPrefab
         }
     }
     public void OpenTask(string taskName)
@@ -117,11 +119,13 @@ public class TaskManager : MonoBehaviour
         tasks.Remove(tasks.Find(x => x.taskName == name));
         ReCreateTasks();
     }
-    public void WriteToTask(string name, float deviation, float percentage)
+    public void WriteToTask(float difference, float percentage)
     {
+        name = lastClickedTask;
+
         TaskInfo task = tasks.Find(x => x.taskName == name);
 
-        task.timeDeviations.Add(deviation);
+        task.timeDeviations.Add(difference);
         task.percentages.Add(percentage);
 
         task.CalculateAverage();
