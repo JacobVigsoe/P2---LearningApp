@@ -3,16 +3,34 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using TMPro;
-using Unity.VisualScripting;
 
 public class TaskInfo 
 {
+    public string filePath;
     public string taskName;
     public float avgTimeDeviation;
     public float avgPercentage;
-    public string filePath;
-    public List<int> timeDeviations = new List<int>();
-    public List<int> percentages = new List<int>();
+    public List<float> timeDeviations = new List<float>();
+    public List<float> percentages = new List<float>();
+
+    public void CalculateAverage()
+    {
+        avgTimeDeviation = 0;
+        avgPercentage = 0;
+
+        foreach (float timeDeviation in timeDeviations)
+        {
+            avgTimeDeviation += timeDeviation;
+        }
+        avgTimeDeviation /= timeDeviations.Count;
+
+        foreach (float percentage in percentages)
+        {
+            avgPercentage += percentage;
+        }
+        avgPercentage /= percentages.Count;
+    }
+
 }
 
 public class TaskManager : MonoBehaviour
@@ -48,7 +66,6 @@ public class TaskManager : MonoBehaviour
         Debug.Log(tasks.Count); 
         ReCreateTasks();
     }
-
     public void AddTask()
     {
         tasks.Add(new TaskInfo
@@ -62,7 +79,6 @@ public class TaskManager : MonoBehaviour
 
         ReCreateTasks();
     }
-
     public void ReCreateTasks()
     {
         foreach (Transform child in taskParent)
@@ -77,20 +93,18 @@ public class TaskManager : MonoBehaviour
             Vector3 taskPosition = taskParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
             GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, taskParent);
             TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
-            newTaskPrefab.SetTaskInfo(task.taskName); // Pass color information to TaskPrefab
+            newTaskPrefab.SetTaskInfo(task.taskName, task.avgTimeDeviation); // Pass color information to TaskPrefab
         }
     }
-
     public void OpenTask(string taskName)
     {
         if(taskName == tasks.Find(x => x.taskName == taskName).taskName)
         {
             title.text = taskName;
-            avgTimeDeviation.text = tasks.Find(x => x.taskName == taskName).avgTimeDeviation.ToString();
-            avgPercentage.text = tasks.Find(x => x.taskName == taskName).avgPercentage.ToString();
+            avgTimeDeviation.text = tasks.Find(x => x.taskName == taskName).avgTimeDeviation.ToString() + " min";
+            avgPercentage.text = tasks.Find(x => x.taskName == taskName).avgPercentage.ToString() + " %";
         }
     }
-
     public void EditButton()
     {
         foreach (TaskPrefab child in taskParent.GetComponentsInChildren<TaskPrefab>())
@@ -98,11 +112,20 @@ public class TaskManager : MonoBehaviour
             child.EditTask();
         }
     }
-
     public void DeleteTask(string name)
     {
         tasks.Remove(tasks.Find(x => x.taskName == name));
         ReCreateTasks();
     }
+    public void WriteToTask(string name, float deviation, float percentage)
+    {
+        TaskInfo task = tasks.Find(x => x.taskName == name);
 
+        task.timeDeviations.Add(deviation);
+        task.percentages.Add(percentage);
+
+        task.CalculateAverage();
+        
+        saveData.SaveTasks(task);
+    }
 }

@@ -215,7 +215,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Avg. time: N/A'
+  m_text: 'Avg. time: '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -609,12 +609,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2797523e99880cc48932651c55611e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveData: {fileID: 0}
   taskNameText: {fileID: 435075616229994079}
   nextButton: {fileID: 6287307008799705634}
-  scaleChildButton: {fileID: 0}
   arrowButton: {fileID: 2344760326555576234}
   DeleteButton: {fileID: 7022769673199107280}
   targetRectTransform: {fileID: 684383380727459123}
+  avgTime: {fileID: 3109372167348945674}
   TargetScale: {x: 1, y: 1, z: 1}
   OffsetRight: {x: 600, y: 0}
   AnimSpeed: 0.5

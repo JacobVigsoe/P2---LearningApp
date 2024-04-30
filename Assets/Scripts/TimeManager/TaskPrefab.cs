@@ -8,40 +8,39 @@ using UnityEngine.Events;
 public class TaskPrefab : MonoBehaviour
 {
     public SaveData saveData;
+
+    [Header("References")]
     public TMP_Text taskNameText;
     public Button nextButton; // Reference to the delete button
     private TaskManager taskManager;
-
     public GameObject arrowButton;
     public GameObject DeleteButton;
-
-    //Animations
     public RectTransform targetRectTransform;
+    public TMP_Text avgTime;
+
+    [Header("settings")]
     public Vector3 TargetScale;
     public Vector2 OffsetRight;
     public float AnimSpeed;
     public string TaskName { get; private set; }
     public delegate void OnTaskDelete(string taskName);
     public static event OnTaskDelete TaskDeleteEvent; // Event for deleting task
-
     private UIManager uimanager;
-    private GetXPTest getXPTest;
 
     private void Start()
     {
         saveData = GameObject.FindObjectOfType<SaveData>();
         taskManager = GameObject.FindObjectOfType<TaskManager>();
-        getXPTest = GameObject.FindObjectOfType<GetXPTest>();
         uimanager = GameObject.FindObjectOfType<UIManager>();
         targetRectTransform.DOScale(TargetScale, AnimSpeed);
         //remainingTimeText = GameObject.FindWithTag("RemainingTimeText").GetComponent<TMP_Text>();
-
     }
 
-    public void SetTaskInfo(string taskName)
+    public void SetTaskInfo(string taskName, float avgDeviation)
     {
         TaskName = taskName;
         taskNameText.text = taskName;
+        avgTime.text += avgDeviation.ToString() + "s";
  
         nextButton.onClick.AddListener(OnButtonClick); // Subscribe to the button click event
     }

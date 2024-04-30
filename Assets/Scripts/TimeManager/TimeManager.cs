@@ -113,7 +113,7 @@ public class TimeManager : MonoBehaviour
 
         GameObject newTaskObject = Instantiate(taskPrefab, tasksParent.GetChild(1)); // Assuming the task parent group's transform is the second child
         TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
-        newTaskPrefab.SetTaskInfo(taskName);
+        //newTaskPrefab.SetTaskInfo(taskName);
 
 
         taskNameInput.text = "";
@@ -221,7 +221,7 @@ public class TimeManager : MonoBehaviour
             Vector3 taskPosition = tasksParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
             GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, tasksParent);
             TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
-            newTaskPrefab.SetTaskInfo(task.name); // Pass color information to TaskPrefab
+            //newTaskPrefab.SetTaskInfo(task.name); // Pass color information to TaskPrefab
 
 
         }
