@@ -23,11 +23,13 @@ public class CountdownTimer : MonoBehaviour
     {
         if (isCountingDown)
         {
-            currentTime -= Time.deltaTime;
+            
+            currentTime += Time.deltaTime;
             if (currentTime <= 0)
             {
                 currentTime = 0;
                 isCountingDown = false;
+                
             }
         }
     }
@@ -37,24 +39,30 @@ public class CountdownTimer : MonoBehaviour
     public void StartTimer(float duration)
     {
         originalTime = duration;
-        currentTime = duration;
         isCountingDown = true;
     }
 
-    public void StopTimer()
+public void StopTimer()
+{
+    isCountingDown = false;
+
+    // Calculate the absolute difference between original time and current time
+    float timeDifference = Mathf.Abs(originalTime - currentTime);
+
+    // Calculate accuracy percentage based on the ratio of time difference to original time
+    float accuracyPercentage = 100f * (1f - (timeDifference / originalTime));
+
+    if (accuracyPercentage <= 0)
     {
-        isCountingDown = false;
-
-        // Calculate accuracy percentage based on the inverse ratio of remaining time to original time
-        float accuracyPercentage = 100f * (1f - (currentTime / originalTime));
-        Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
-
-        accuracyManager.SaveAccuracyToCSV(accuracyPercentage);
-        windowGraph.UpdateGraph();
+        accuracyPercentage = 0;
     }
+    Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
+
+    accuracyManager.SaveAccuracyToCSV(accuracyPercentage);
+    windowGraph.UpdateGraph();
+}
 
    
-
     public void ResetTimer()
     {
         currentTime = countdownDuration;;
@@ -62,9 +70,10 @@ public class CountdownTimer : MonoBehaviour
 
     public void AddTime(float timeToAdd)
     {
-        currentTime += timeToAdd;
+        currentTime = 0;
+        originalTime = timeToAdd;
 
         // Start counting down if not already
-        StartTimer(currentTime);
+        StartTimer(originalTime);
     }
 }
