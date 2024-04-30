@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using TMPro;
+using Unity.VisualScripting;
 
 public class TaskInfo 
 {
@@ -88,6 +89,20 @@ public class TaskManager : MonoBehaviour
             avgTimeDeviation.text = tasks.Find(x => x.taskName == taskName).avgTimeDeviation.ToString();
             avgPercentage.text = tasks.Find(x => x.taskName == taskName).avgPercentage.ToString();
         }
+    }
+
+    public void EditButton()
+    {
+        foreach (TaskPrefab child in taskParent.GetComponentsInChildren<TaskPrefab>())
+        {
+            child.EditTask();
+        }
+    }
+
+    public void DeleteTask(string name)
+    {
+        tasks.Remove(tasks.Find(x => x.taskName == name));
+        ReCreateTasks();
     }
 
 }

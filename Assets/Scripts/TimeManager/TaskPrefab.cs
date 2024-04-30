@@ -7,10 +7,13 @@ using UnityEngine.Events;
 
 public class TaskPrefab : MonoBehaviour
 {
+    public SaveData saveData;
     public TMP_Text taskNameText;
     public Button nextButton; // Reference to the delete button
     private TaskManager taskManager;
 
+    public GameObject arrowButton;
+    public GameObject DeleteButton;
 
     //Animations
     public RectTransform targetRectTransform;
@@ -23,23 +26,16 @@ public class TaskPrefab : MonoBehaviour
 
     private UIManager uimanager;
     private GetXPTest getXPTest;
-    private TMP_Text remainingTimeText; // Reference to TMP text for remaining time
-    private static TaskPrefab lastClickedTaskPrefab; // Reference to the last clicked TaskPrefab
 
     private void Start()
     {
+        saveData = GameObject.FindObjectOfType<SaveData>();
         taskManager = GameObject.FindObjectOfType<TaskManager>();
         getXPTest = GameObject.FindObjectOfType<GetXPTest>();
         uimanager = GameObject.FindObjectOfType<UIManager>();
         targetRectTransform.DOScale(TargetScale, AnimSpeed);
         //remainingTimeText = GameObject.FindWithTag("RemainingTimeText").GetComponent<TMP_Text>();
 
-    }
-
-    public void Initialize(Task task, TimeManager manager)
-    {
-        TaskName = task.name;
-        taskNameText.text = task.name;
     }
 
     public void SetTaskInfo(string taskName)
@@ -50,11 +46,15 @@ public class TaskPrefab : MonoBehaviour
         nextButton.onClick.AddListener(OnButtonClick); // Subscribe to the button click event
     }
 
-
     public void OnButtonClick()
     {
         uimanager.taskStatsMenu();
         taskManager.OpenTask(TaskName);
+    }
+
+    public void DeleteTask()
+    {
+        saveData.DeleteTask(TaskName);
     }
 
     private IEnumerator WaitForAnimation()
@@ -62,4 +62,23 @@ public class TaskPrefab : MonoBehaviour
         yield return new WaitForSeconds(AnimSpeed);
         TaskDeleteEvent?.Invoke(TaskName); // Trigger the event passing the task name 
     }
+
+    public void EditTask()
+    {
+        if(arrowButton.activeSelf == true)
+        {
+            nextButton.interactable = false;
+            arrowButton.SetActive(false);
+            DeleteButton.SetActive(true);
+        }
+        else
+        {
+            nextButton.interactable = true;
+            arrowButton.SetActive(true);
+            DeleteButton.SetActive(false);
+        }
+    }
+
+
+
 }

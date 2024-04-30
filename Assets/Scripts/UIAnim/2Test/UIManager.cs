@@ -24,8 +24,8 @@ public class UIManager : MonoBehaviour
     public int currentNoteIndex = 0;
 
     [Header("Buttons")]
-    [SerializeField] private RectTransform closeButton;
-    [SerializeField] private GameObject nextNoteButton;
+    //[SerializeField] private RectTransform closeButton;
+    //[SerializeField] private GameObject nextNoteButton;
 
     // Offsets and positions
     private Vector2 origin = new Vector2(0, 0);
@@ -43,7 +43,7 @@ public class UIManager : MonoBehaviour
     {
         mainMenu.DOAnchorPos(origin, animationSpeed);
         noteMenu.DOAnchorPos(origin, animationSpeed);
-        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        //closeButton.DOAnchorPos(offsetDown, animationSpeed);
         analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
         ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
         TaskStatsMenu.DOAnchorPos(origin, animationSpeed);
@@ -62,7 +62,7 @@ public class UIManager : MonoBehaviour
         ShopMenu.DOAnchorPos(origin, animationSpeed);
         mainMenu.DOAnchorPos(offsetRight, animationSpeed);
         noteMenu.DOAnchorPos(offsetRight, animationSpeed);
-        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        //closeButton.DOAnchorPos(offsetDown, animationSpeed);
         analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
         TaskStatsMenu.DOAnchorPos(offsetRight, animationSpeed);
         IdleMenu.DOAnchorPos(offsetRight, animationSpeed);
@@ -74,7 +74,7 @@ public class UIManager : MonoBehaviour
         ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
         mainMenu.DOAnchorPos(origin, animationSpeed);
         noteMenu.DOAnchorPos(offsetRight, animationSpeed);
-        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        //closeButton.DOAnchorPos(offsetDown, animationSpeed);
         analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
         TaskStatsMenu.DOAnchorPos(origin, animationSpeed);
         IdleMenu.DOAnchorPos(offsetRight, animationSpeed);
@@ -85,7 +85,7 @@ public class UIManager : MonoBehaviour
         ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
         mainMenu.DOAnchorPos(origin, animationSpeed);
         noteMenu.DOAnchorPos(offsetRight, animationSpeed);
-        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        //closeButton.DOAnchorPos(offsetDown, animationSpeed);
         analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
         TaskStatsMenu.DOAnchorPos(origin, animationSpeed);
         IdleMenu.DOAnchorPos(origin, animationSpeed);
@@ -96,7 +96,7 @@ public class UIManager : MonoBehaviour
         ShopMenu.DOAnchorPos(offsetleft, animationSpeed);
         mainMenu.DOAnchorPos(origin, animationSpeed);
         noteMenu.DOAnchorPos(offsetRight, animationSpeed);
-        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        //closeButton.DOAnchorPos(offsetDown, animationSpeed);
         analyticsMenu.DOAnchorPos(offsetDown, animationSpeed);
         TaskStatsMenu.DOAnchorPos(origin, animationSpeed);
         IdleMenu.DOAnchorPos(origin, animationSpeed);
@@ -106,16 +106,16 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        if (noteIsOpen)
-            closeButton.DOAnchorPos(origin + new Vector2(-350, 750), animationSpeed); // Sets the close buttons position to its anchor position + an offset
-        else
-            closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        //if (noteIsOpen)
+            //closeButton.DOAnchorPos(origin + new Vector2(-350, 750), animationSpeed); // Sets the close buttons position to its anchor position + an offset
+        //else
+            //closeButton.DOAnchorPos(offsetDown, animationSpeed);
 
-        if (notesList.Count > 1)
-            nextNoteButton.SetActive(true);
+       // if (notesList.Count > 1)
+            //nextNoteButton.SetActive(true);
         
-        else
-            nextNoteButton.SetActive(false);
+        //else
+            //nextNoteButton.SetActive(false);
     }
 
     public void Back()
@@ -156,7 +156,7 @@ public class UIManager : MonoBehaviour
     {
         notesList[currentNoteIndex].GetComponent<Animator>().SetTrigger("CloseNote");
         noteIsOpen = false;
-        closeButton.DOAnchorPos(offsetDown, animationSpeed);
+        //closeButton.DOAnchorPos(offsetDown, animationSpeed);
     }
 
     public void NextNote()

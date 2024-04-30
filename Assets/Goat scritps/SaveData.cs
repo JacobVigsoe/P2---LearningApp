@@ -7,48 +7,7 @@ using System.Linq;
 
 public class SaveData : MonoBehaviour
 {
-    /*
-    public void SaveTasks(TaskInfo task)
-    {
-        //var xmlSerializer = new XmlSerializer(typeof(TaskInfo));
-        var xmlRoot = new XmlRootAttribute { ElementName = "TaskInfo", Namespace = "" };
-        var xmlSerializer = new XmlSerializer(typeof(TaskInfo), xmlRoot);   
-
-        task.filePath = Application.dataPath + "/TaskInfo/" + task.taskName + ".xml";
-
-        using (FileStream stream = File.Create(Application.dataPath + "/TaskInfo/" + task.taskName + ".xml"))
-        {
-            xmlSerializer.Serialize(stream, task);
-        }
-    }
-    */
-    /*
-    public List<TaskInfo> LoadTasks()
-    {
-        //var xmlSerializer = new XmlSerializer(typeof(TaskInfo));
-        var xmlRoot = new XmlRootAttribute { ElementName = "TaskInfo", Namespace = "" };
-        var xmlSerializer = new XmlSerializer(typeof(TaskInfo), xmlRoot);
-
-        List<TaskInfo> tasks = new List<TaskInfo>();
-
-        string directoryPath = Application.dataPath + "/TaskInfo/";
-
-        if (Directory.Exists(directoryPath) && Directory.EnumerateFileSystemEntries(directoryPath).Any())
-        {
-            Debug.Log(directoryPath);
-            foreach (var file in Directory.EnumerateFiles(directoryPath, "*.xml"))
-            {
-                using (FileStream stream = File.OpenRead(file))
-                {
-                    var task = xmlSerializer.Deserialize(stream) as TaskInfo;
-                    tasks.Add(task);
-                }
-            }
-        }
-
-        return tasks;
-    }
-    */
+    public TaskManager taskManager;
 
     public void SaveTasks(TaskInfo task)
     {
@@ -67,7 +26,6 @@ public class SaveData : MonoBehaviour
 
         if (Directory.Exists(directoryPath) && Directory.EnumerateFileSystemEntries(directoryPath).Any())
         {
-            Debug.Log(directoryPath);
             foreach (var file in Directory.EnumerateFiles(directoryPath, "*.json"))
             {
                 string json = File.ReadAllText(file);
@@ -77,9 +35,18 @@ public class SaveData : MonoBehaviour
                 tasks.Add(task);
             }
         }
-
         return tasks;
     }
 
+    public void DeleteTask(string name)
+    {
+        string directoryPath = Application.dataPath + "/TaskInfo/";
+        string filePath = directoryPath + name + ".json";
 
+        if (Directory.Exists(directoryPath) && Directory.EnumerateFileSystemEntries(directoryPath).Any())
+        {
+            taskManager.DeleteTask(name);
+            File.Delete(filePath);
+        }
+    }
 }
