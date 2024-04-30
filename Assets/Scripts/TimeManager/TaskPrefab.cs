@@ -17,6 +17,7 @@ public class TaskPrefab : MonoBehaviour
     public GameObject DeleteButton;
     public RectTransform targetRectTransform;
     public TMP_Text avgTime;
+    public WindowGraph windowGraph;
 
     [Header("settings")]
     public Vector3 TargetScale;
@@ -29,6 +30,7 @@ public class TaskPrefab : MonoBehaviour
 
     private void Start()
     {
+        windowGraph = GameObject.FindObjectOfType<WindowGraph>();
         saveData = GameObject.FindObjectOfType<SaveData>();
         taskManager = GameObject.FindObjectOfType<TaskManager>();
         uimanager = GameObject.FindObjectOfType<UIManager>();
@@ -49,6 +51,7 @@ public class TaskPrefab : MonoBehaviour
         uimanager.taskStatsMenu();
         taskManager.OpenTask(TaskName);
         taskManager.lastClickedTask = TaskName;
+        windowGraph.UpdateGraph();
     }
 
     public void DeleteTask()

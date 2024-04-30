@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using TMPro;
+using System.Linq;
+using System;
 
 public class TaskInfo 
 {
@@ -29,6 +31,18 @@ public class TaskInfo
             avgPercentage += percentage;
         }
         avgPercentage /= percentages.Count;
+    }
+
+    public List<int> ReturnAsInt()
+    {
+        List<int> intList = new List<int>();
+
+        foreach (float value in percentages)
+        {
+            intList.Add((int)value);
+        }
+
+        return intList;
     }
 
 }
@@ -141,4 +155,12 @@ public class TaskManager : MonoBehaviour
         
         saveData.SaveTasks(task);
     }
+
+    public List<int> GetPercentage()
+    {
+        TaskInfo task = tasks.Find(x => x.taskName == lastClickedTask);
+
+        return task.ReturnAsInt();
+    }
+
 }

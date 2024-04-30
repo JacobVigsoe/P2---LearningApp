@@ -16,10 +16,11 @@ public class WindowGraph : MonoBehaviour
     private RectTransform dashTemplateX;
     private RectTransform dashTemplateY;
     private List<GameObject> gameObjectList;
+    public TaskManager taskManager;
 
     [SerializeField] private int ShowLastListAmount = -1;
 
-    private List<int> ValueList;
+    private List<int> valueList;
 
     private void Awake()
     {
@@ -40,10 +41,10 @@ public class WindowGraph : MonoBehaviour
     public void UpdateGraph()
     {
         // Get accuracy values from AccuracyManager and convert them to integers
-        float[] accuracyValues = AccuracyManager.Instance.AccuracyValues;
-        ValueList = accuracyValues.Select(accuracy => Mathf.RoundToInt(accuracy)).ToList();
+        if(taskManager.lastClickedTask != "rÃ¸vslikker")
+            valueList = taskManager.GetPercentage();
 
-        ShowGraph(ValueList, ShowLastListAmount, (int _i) => "" + (_i + 1), (float _f) => "" + Mathf.RoundToInt(_f));
+        ShowGraph(valueList, ShowLastListAmount, (int _i) => "" + (_i + 1), (float _f) => "" + Mathf.RoundToInt(_f));
     }
 
     private GameObject CreateCircle(Vector2 anchoredPosition) 
@@ -92,7 +93,7 @@ public class WindowGraph : MonoBehaviour
         float yMaximum = valueList[0];
         float yMinimum = valueList[0];
 
-        for (int i = Mathf.Max(valueList.Count - maxVisibleValueAmount, 0); i < valueList.Count; i++) //hvis vi har mindre end 5 values i vores data set så ville den returne error (valueList.Count - maxVisibleValueAmount vil gå i minus). Mathf.Max gør at den istedet returner 0 så vi ikke får en error.
+        for (int i = Mathf.Max(valueList.Count - maxVisibleValueAmount, 0); i < valueList.Count; i++) //hvis vi har mindre end 5 values i vores data set sï¿½ ville den returne error (valueList.Count - maxVisibleValueAmount vil gï¿½ i minus). Mathf.Max gï¿½r at den istedet returner 0 sï¿½ vi ikke fï¿½r en error.
         {
             int value = valueList[i];
 
@@ -114,12 +115,12 @@ public class WindowGraph : MonoBehaviour
         yMaximum = yMaximum + (yDifference * 0.2f);
         yMinimum = yMinimum - (yDifference * 0.2f);
 
-        float xSize = graphWidth / (maxVisibleValueAmount + 1); // +1 så den ikke er helt oppe af højre side på grafen
+        float xSize = graphWidth / (maxVisibleValueAmount + 1); // +1 sï¿½ den ikke er helt oppe af hï¿½jre side pï¿½ grafen
 
         int xIndex = 0;
 
         GameObject lastCircleGameObject = null;
-        for (int i = Mathf.Max(valueList.Count - maxVisibleValueAmount, 0); i < valueList.Count; i++) // hvis maxVisibleValueAmount er fx 5 vil den vise de sidste 5 værdier 
+        for (int i = Mathf.Max(valueList.Count - maxVisibleValueAmount, 0); i < valueList.Count; i++) // hvis maxVisibleValueAmount er fx 5 vil den vise de sidste 5 vï¿½rdier 
         {
             float xPosition = xSize + xIndex * xSize;
             float yPosition = ((valueList[i] - yMinimum) / (yMaximum - yMinimum)) * graphHeight;
@@ -180,7 +181,7 @@ public class WindowGraph : MonoBehaviour
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
         rectTransform.sizeDelta = new Vector2(distance, 3f);
-        rectTransform.anchoredPosition = dotPositionA + dir  * distance * .5f; // Så den bliver positioned i midten af de 2 points (.5f)
+        rectTransform.anchoredPosition = dotPositionA + dir  * distance * .5f; // Sï¿½ den bliver positioned i midten af de 2 points (.5f)
         rectTransform.localEulerAngles = new Vector3(0, 0, UtilsClass.GetAngleFromVectorFloat(dir));
         return gameObject;
     }

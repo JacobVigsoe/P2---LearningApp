@@ -45,25 +45,25 @@ public class CountdownTimer : MonoBehaviour
         isCountingDown = true;
     }
 
-public void StopTimer()
-{
-    isCountingDown = false;
-
-    // Calculate the absolute difference between original time and current time
-    float timeDifference = Mathf.Abs(originalTime - currentTime);
-
-    // Calculate accuracy percentage based on the ratio of time difference to original time
-    float accuracyPercentage = 100f * (1f - (timeDifference / originalTime));
-
-    if (accuracyPercentage <= 0)
+    public void StopTimer()
     {
-        accuracyPercentage = 0;
-    }
-    Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
+        isCountingDown = false;
 
-    taskManager.WriteToTask(timeDifference, accuracyPercentage);
-    windowGraph.UpdateGraph();
-}
+        // Calculate the absolute difference between original time and current time
+        float timeDifference = Mathf.Abs(originalTime - currentTime);
+
+        // Calculate accuracy percentage based on the ratio of time difference to original time
+        float accuracyPercentage = 100f * (1f - (timeDifference / originalTime));
+
+        if (accuracyPercentage <= 0)
+        {
+            accuracyPercentage = 0;
+        }
+        Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
+
+        taskManager.WriteToTask(timeDifference, accuracyPercentage);
+        windowGraph.UpdateGraph();
+    }
 
    
     public void ResetTimer()

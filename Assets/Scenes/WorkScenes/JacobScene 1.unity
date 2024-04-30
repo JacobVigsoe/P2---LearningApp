@@ -4780,7 +4780,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &187444059
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4815,6 +4815,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   circleSprite: {fileID: -2413806693520163455, guid: 25b1019521873d04e9dfb752e9ec6a92, type: 3}
+  taskManager: {fileID: 1039557167}
   ShowLastListAmount: 7
 --- !u!1 &189874548
 GameObject:
@@ -17739,7 +17740,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 720, y: -1159.5999}
+  m_AnchoredPosition: {x: 720, y: -281.9781}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &720646736
@@ -45857,7 +45858,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1967988785
 Transform:
   m_ObjectHideFlags: 0
@@ -47054,6 +47055,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   circleSprite: {fileID: -2413806693520163455, guid: 25b1019521873d04e9dfb752e9ec6a92, type: 3}
+  taskManager: {fileID: 1039557167}
   ShowLastListAmount: 7
 --- !u!1 &2034047592
 GameObject:
