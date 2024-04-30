@@ -103,8 +103,15 @@ public class TaskManager : MonoBehaviour
         if(taskName == tasks.Find(x => x.taskName == taskName).taskName)
         {
             title.text = taskName;
-            avgTimeDeviation.text = tasks.Find(x => x.taskName == taskName).avgTimeDeviation.ToString() + " min";
-            avgPercentage.text = tasks.Find(x => x.taskName == taskName).avgPercentage.ToString() + " %";
+            
+            TaskInfo task = tasks.Find(x => x.taskName == taskName);
+            
+            if(task.avgTimeDeviation < 60)
+                avgTimeDeviation.text = task.avgTimeDeviation.ToString("F2") + " sec";
+            else
+                avgTimeDeviation.text = (task.avgTimeDeviation / 60).ToString("F2") + " min";
+
+            avgPercentage.text = task.avgPercentage.ToString("F2") + " %";
         }
     }
     public void EditButton()
@@ -129,6 +136,8 @@ public class TaskManager : MonoBehaviour
         task.percentages.Add(percentage);
 
         task.CalculateAverage();
+
+        Debug.Log(task.avgPercentage);
         
         saveData.SaveTasks(task);
     }

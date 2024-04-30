@@ -39,7 +39,7 @@ public class TaskPrefab : MonoBehaviour
     {
         TaskName = taskName;
         taskNameText.text = taskName;
-        avgTime.text += avgDeviation.ToString() + "s";
+        avgTime.text += avgDeviation.ToString("F2") + "s";
  
         nextButton.onClick.AddListener(OnButtonClick); // Subscribe to the button click event
     }
