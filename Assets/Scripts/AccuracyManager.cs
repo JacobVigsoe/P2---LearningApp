@@ -4,6 +4,7 @@ using System.IO;
 
 public class AccuracyManager : MonoBehaviour
 {
+    private TaskManager taskManager;
     private static AccuracyManager instance;
     public static AccuracyManager Instance
     {
@@ -32,9 +33,14 @@ public class AccuracyManager : MonoBehaviour
         LoadAccuracyValues();
     }
 
+    private void Start()
+    {
+        taskManager = GameObject.FindObjectOfType<TaskManager>();
+    }
+
     private void LoadAccuracyValues()
     {
-        string filePath = Application.dataPath + "/accuracy.csv";
+        string filePath = Application.dataPath + taskManager.lastClickedTask  + ".json";
 
         if (File.Exists(filePath))
         {
