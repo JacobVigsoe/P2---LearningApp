@@ -33,7 +33,6 @@ public class TaskPrefab : MonoBehaviour
         taskManager = GameObject.FindObjectOfType<TaskManager>();
         uimanager = GameObject.FindObjectOfType<UIManager>();
         targetRectTransform.DOScale(TargetScale, AnimSpeed);
-        //remainingTimeText = GameObject.FindWithTag("RemainingTimeText").GetComponent<TMP_Text>();
     }
 
     public void SetTaskInfo(string taskName, float avgDeviation)
@@ -49,6 +48,7 @@ public class TaskPrefab : MonoBehaviour
     {
         uimanager.taskStatsMenu();
         taskManager.OpenTask(TaskName);
+        taskManager.lastClickedTask = TaskName;
     }
 
     public void DeleteTask()
