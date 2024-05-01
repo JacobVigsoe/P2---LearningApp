@@ -52,10 +52,10 @@ public class WindowGraph : MonoBehaviour
         GameObject gameObject = new GameObject("circle", typeof(Image));
         gameObject.transform.SetParent(graphContainer,false);
         gameObject.GetComponent<Image>().sprite = circleSprite;
-        gameObject.GetComponent<Image>().color = new Color(0, 0, 0, 1f);
+        gameObject.GetComponent<Image>().color = new Color(46f / 255f, 112f / 255f, 170f / 255f, 1f);
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = anchoredPosition;
-        rectTransform.sizeDelta = new Vector2(11, 11);
+        rectTransform.sizeDelta = new Vector2(22, 22);
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
 
@@ -174,13 +174,13 @@ public class WindowGraph : MonoBehaviour
     {
         GameObject gameObject = new GameObject("dotConnection", typeof (Image));
         gameObject.transform.SetParent(graphContainer,false);
-        gameObject.GetComponent<Image>().color = new Color(0, 0, 0, 1f);
+        gameObject.GetComponent<Image>().color = new Color(46f/255f, 112f/255f, 170f/255f, 1f);
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
         Vector2 dir = (dotPositionB - dotPositionA).normalized;
         float distance = Vector2.Distance(dotPositionA, dotPositionB);
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
-        rectTransform.sizeDelta = new Vector2(distance, 3f);
+        rectTransform.sizeDelta = new Vector2(distance, 10f);
         rectTransform.anchoredPosition = dotPositionA + dir  * distance * .5f; // S� den bliver positioned i midten af de 2 points (.5f)
         rectTransform.localEulerAngles = new Vector3(0, 0, UtilsClass.GetAngleFromVectorFloat(dir));
         return gameObject;

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
 
 public class XPStats : MonoBehaviour
@@ -10,10 +10,15 @@ public class XPStats : MonoBehaviour
 
     private XPManager xpManager;
     private string prefix = "XPStats_"; // Prefix for PlayerPrefs keys
+    [SerializeField] private ParticleSystem lvlUpParticle;
+    [SerializeField] private GameObject lvlUpText;
+
     void Start()
     {
+        PlayerPrefs.DeleteAll();
+
         CurrentLevel = PlayerPrefs.GetInt(prefix + "CurrentLevel", 1); // Default to level 1 if not found
-        MaxXP = PlayerPrefs.GetInt(prefix + "MaxXP", 300); // Default to 100 if not found
+        MaxXP = PlayerPrefs.GetInt(prefix + "MaxXP", 300); // Default to 300 if not found
         CurrentXP = PlayerPrefs.GetInt(prefix + "CurrentXP", 0); // Default to 0 if not found
 
         // Get a reference to the XPManager instance in Start
@@ -26,6 +31,9 @@ public class XPStats : MonoBehaviour
         {
             Debug.LogError("Could not find XPManager component.");
         }
+
+        
+
     }
 
     private void OnApplicationQuit()
@@ -44,6 +52,8 @@ public class XPStats : MonoBehaviour
         if (CurrentXP >= MaxXP)
         {
             LevelUp();
+            lvlUpParticle.Play();
+            lvlUpText.SetActive(true);
         }
     }
 
@@ -54,4 +64,5 @@ public class XPStats : MonoBehaviour
         CurrentXP = 0;
         MaxXP += 100;
     }
+
 }

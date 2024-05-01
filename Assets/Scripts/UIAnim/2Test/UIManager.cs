@@ -37,6 +37,7 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         mainMenu.DOAnchorPos(origin, animationSpeed);
+        Back();
     }
 
     public void setTimeMenu ()

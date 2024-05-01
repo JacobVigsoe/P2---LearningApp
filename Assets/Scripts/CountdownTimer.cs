@@ -13,9 +13,11 @@ public class CountdownTimer : MonoBehaviour
 
     private TaskManager taskManager;
     private WindowGraph windowGraph;
+    private XPManager xpManager;
 
     void Start()
     {
+        xpManager = GameObject.FindObjectOfType<XPManager>();
         taskManager = GameObject.FindObjectOfType<TaskManager>();
         accuracyManager = GameObject.FindObjectOfType<AccuracyManager>();
         windowGraph = GameObject.FindObjectOfType<WindowGraph>();
@@ -61,6 +63,7 @@ public class CountdownTimer : MonoBehaviour
         }
         Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
 
+        xpManager.UpdateExperienceAmount(accuracyPercentage);
         taskManager.WriteToTask(timeDifference, accuracyPercentage);
         windowGraph.UpdateGraph();
     }
