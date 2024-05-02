@@ -24,7 +24,8 @@ public class AvatarSelection : MonoBehaviour
 
     public void BuyAvatar()
     {
-        
+        SaveData.instance.money -= price;
+        SaveData.instance.SaveUserData();
     }
 
 }
