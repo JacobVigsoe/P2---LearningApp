@@ -6,11 +6,14 @@ using TMPro;
 
 public class AvatarSelection : MonoBehaviour
 {
-
     public TextMeshProUGUI priceTxt;
     private int price;
     private int avatarIndex;
-    private Button buyButton;
+
+    // children
+    public GameObject buyButton;
+    public GameObject chooseButton;
+    public GameObject chosenBorder;
 
     // Start is called before the first frame update
     void Start()
@@ -19,20 +22,29 @@ public class AvatarSelection : MonoBehaviour
         avatarIndex = this.gameObject.transform.GetSiblingIndex();
 
         //Checking if the avatar is was chosen 
+        if(SaveData.instance.charactersUnlocked[avatarIndex] == true)
+        {
+            buyButton.gameObject.SetActive(false);
+            chooseButton.gameObject.SetActive(true);
+            Debug.Log("Unlocked but not chosen " + avatarIndex);
+        }
+
         if (SaveData.instance.currentCharacter == avatarIndex)
         {
             ChooseAvatar();
         }
+
+        /*
         else
         {
-            Debug.LogFormat("Avatar " + avatarIndex + "is not the Current Character selected");
+            buyButton.gameObject.SetActive(true);
+            chooseButton.gameObject.SetActive(false);
+
         }
+        */
 
         //Getting the price of the avatar
         price = int.Parse(priceTxt.text);
-
-        //Finding the button attached to the avatar and calling the BuyAvatar method on click
-        BuyButton();
     }
 
     // Update is called once per frame
@@ -40,30 +52,16 @@ public class AvatarSelection : MonoBehaviour
     {
         //Checking if money is equal to or greater than the price of the avatar and thereby making the Buy button interactable.
 
-        45if (SaveData.instance.money >= price)
-        {
-            this.gameObject.transform.GetChild(3).interactable = true;
-            this.gameObject.transform.GetChild(3).GetComponent<Image>().color = Color.white;
-        }
-        else
-        {
-            this.gameObject.transform.GetChild(3).interactable = false;
-            this.gameObject.transform.GetChild(3).GetComponent<Image>().color = Color.gray;
-        }
-
-
-        //If the button is not interactable, the color is grayed out and if the button is interactable, the color is white.
         if (SaveData.instance.money >= price)
         {
-            this.gameObject.transform.GetChild(3).interactable = true;
-            this.gameObject.transform.GetChild(3).GetComponent<Image>().color = Color.white;
+            buyButton.GetComponent<Button>().interactable = true;
+            buyButton.GetComponent<Image>().color = Color.white;
         }
         else
         {
-            this.gameObject.transform.GetChild(3).interactable = false;
-            this.gameObject.transform.GetChild(3).GetComponent<Image>().color = Color.gray;
+            buyButton.GetComponent<Button>().interactable = false;
+            buyButton.GetComponent<Image>().color = Color.gray;
         }
-        
     }
 
     public void BuyAvatar()
@@ -75,13 +73,14 @@ public class AvatarSelection : MonoBehaviour
 
         //Disabling Buy button
         buyButton.gameObject.SetActive(false);
-        Debug.Log("Buy button for Avatar" + avatarIndex + "disabled");
 
         //Choosing character
         SaveData.instance.currentCharacter = avatarIndex;
 
         //Enabling Chosen Border
-        this.gameObject.transform.GetChild(5).gameObject.SetActive(true);
+        chosenBorder.gameObject.SetActive(true);
+
+        ChooseAvatar();
 
         //Saving data
         SaveData.instance.SaveUserData();
@@ -90,16 +89,20 @@ public class AvatarSelection : MonoBehaviour
     public void ChooseAvatar()
     {
         //Disabling Choose button
-        this.gameObject.transform.GetChild(4).gameObject.SetActive(false);
+        chooseButton.gameObject.SetActive(false);
 
         //Enabling Chosen Border
-        this.gameObject.transform.GetChild(5).gameObject.SetActive(true);
+        chosenBorder.gameObject.SetActive(true);
 
-        //Disabling previous active Chosen Border
-        GameObject.Find("Avatar" + SaveData.instance.currentCharacter).transform.GetChild(5).gameObject.SetActive(false);
-      
-        //Enabling previous Choose button
-        GameObject.Find("Avatar" + SaveData.instance.currentCharacter).transform.GetChild(4).gameObject.SetActive(true);
+        if(SaveData.instance.currentCharacter != avatarIndex)
+        {
+            // bruh virker ikke
+            //Disabling previous active Chosen Border
+            GameObject.Find("Avatar" + SaveData.instance.currentCharacter).transform.GetChild(5).gameObject.SetActive(false);
+
+            //Enabling previous Choose button
+            GameObject.Find("Avatar" + SaveData.instance.currentCharacter).transform.GetChild(4).gameObject.SetActive(true);
+        }
 
         //Choosing character
         SaveData.instance.currentCharacter = avatarIndex;
@@ -107,15 +110,5 @@ public class AvatarSelection : MonoBehaviour
         //Saving data
         SaveData.instance.SaveUserData();
     }
-
-    //A method that finds the button attached to the avatar and calls the BuyAvatar method on click
-    public void BuyButton()
-    {
-        buyButton = this.gameObject.transform.GetChild(3).GetComponent<Button>();
-        buyButton.gameObject.GetComponent<Button>().onClick.AddListener(BuyAvatar);
-    }
-
-    //A method that finds the BuyButton attached and sets the buyButton variable to be that and calls the BuyAvatar method on click
-
 
 }

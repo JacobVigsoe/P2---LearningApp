@@ -18434,7 +18434,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 720, y: -281.9794}
+  m_AnchoredPosition: {x: 720, y: -1159.5997}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &720646736
@@ -20865,6 +20865,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   taskManager: {fileID: 1039557167}
+  money: 0
+  charactersUnlocked: 010000000000
+  currentCharacter: 0
 --- !u!1 &833149555
 GameObject:
   m_ObjectHideFlags: 0
