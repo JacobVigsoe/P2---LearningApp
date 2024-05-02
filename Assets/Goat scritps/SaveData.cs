@@ -17,6 +17,7 @@ public class SaveData : MonoBehaviour
 
     // User stuff
     public int money;
+    public bool[] charactersUnlocked = new bool[6] {true, false, false, false, false, false};
     public int currentCharacter;
     public static SaveData instance;
 
@@ -30,6 +31,8 @@ public class SaveData : MonoBehaviour
             Destroy(gameObject);
         else
             instance = this;
+
+        LoadUserData();
     }
     public void SaveTasks(TaskInfo task)
     {
@@ -76,6 +79,7 @@ public class SaveData : MonoBehaviour
 
         data.money = money;
         data.currentCharacter = currentCharacter;
+        data.charactersUnlocked = charactersUnlocked;
 
         // Save the UserData class to a json file
         string json = JsonUtility.ToJson(data);
@@ -93,7 +97,9 @@ public class SaveData : MonoBehaviour
 
         money = data.money;
         currentCharacter = data.currentCharacter;
-    }   
+        data.charactersUnlocked = charactersUnlocked;
+
+    }
     public void AdjustMoney(int amount)
     {
         money += amount;
@@ -104,4 +110,5 @@ public class UserData
 {
     public int money;
     public int currentCharacter;
+    public bool[] charactersUnlocked;
 }
