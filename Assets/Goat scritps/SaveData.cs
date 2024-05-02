@@ -18,7 +18,8 @@ public class SaveData : MonoBehaviour
     // User stuff
     public int money;
     public int currentCharacter;
-    public SaveData instance;
+    public static SaveData instance;
+
     void Awake()
     {
         directoryPath = Application.dataPath + "/TaskInfo/";
