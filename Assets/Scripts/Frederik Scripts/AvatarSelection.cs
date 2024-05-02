@@ -21,7 +21,10 @@ public class AvatarSelection : MonoBehaviour
         //Setting the avataravatarIndex of the avatar equal to its position in the hierarchy
         avatarIndex = this.gameObject.transform.GetSiblingIndex();
 
-        //Checking if the avatar is was chosen 
+        //Checking if the avatar is unlocked
+        
+        Debug.Log("is unlocked" + SaveData.instance.charactersUnlocked[avatarIndex]);
+
         if(SaveData.instance.charactersUnlocked[avatarIndex] == true)
         {
             buyButton.gameObject.SetActive(false);
