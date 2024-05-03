@@ -85,7 +85,6 @@ public class SaveData : MonoBehaviour
         string json = JsonUtility.ToJson(data);
 
         File.WriteAllText(userData, json);
-        Debug.Log("Saved");
     }
     public void LoadUserData()
     {
