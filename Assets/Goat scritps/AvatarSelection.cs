@@ -120,6 +120,8 @@ public class AvatarSelection : MonoBehaviour
 
         previousCharacter = this.gameObject;
 
+        AvatarDisplay.instance.UpdateAvatar(avatarIndex);
+
         //Saving data
         SaveData.instance.SaveUserData();
     }

@@ -17,7 +17,7 @@ public class SaveData : MonoBehaviour
 
     // User stuff
     public int money;
-    public bool[] charactersUnlocked = new bool[6] {true, true, false, false, false, false};
+    public bool[] charactersUnlocked = new bool[6] {true, false, false, false, false, false};
     public int currentCharacter = 1;
     public static SaveData instance;
 
@@ -88,7 +88,7 @@ public class SaveData : MonoBehaviour
     }
     public void LoadUserData()
     {
-        if(! Directory.Exists(userDataPath))
+        if(! Directory.Exists(userDataPath) || ! File.Exists(userData))
             return;
         
         string json = File.ReadAllText(userData);
