@@ -33,11 +33,6 @@ public class WindowGraph : MonoBehaviour
 
     }
 
-    private void Start()
-    {
-        UpdateGraph();
-    }
-
     public void UpdateGraph()
     {
         // Get accuracy values from AccuracyManager and convert them to integers

@@ -29,7 +29,6 @@ public class AvatarSelection : MonoBehaviour
         {
             previousCharacter = this.gameObject;
             ChooseAvatar();
-            Debug.Log("Choosing" + gameObject.name);
         }
 
         //If character is bought but NOT chosen
@@ -84,7 +83,7 @@ public class AvatarSelection : MonoBehaviour
     public void BuyAvatar()
     {
         //Adjusting money and noting that character is unlocked
-        SaveData.instance.money -= price;
+        SaveData.instance.AdjustMoney(-price);
         SaveData.instance.charactersUnlocked[avatarIndex] = true;
 
         //Disabling Buy button

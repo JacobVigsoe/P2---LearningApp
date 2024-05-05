@@ -79,7 +79,6 @@ public class TaskManager : MonoBehaviour
     void Start()
     {
         tasks = saveData.LoadTasks();
-        Debug.Log(tasks.Count); 
         ReCreateTasks();
     }
     public void AddTask()
@@ -91,6 +90,7 @@ public class TaskManager : MonoBehaviour
             avgPercentage = 0,
             filePath = filePath + "/" + taskNameInput.text + ".json"
         });
+        
         saveData.SaveTasks(tasks[tasks.Count - 1]);
 
         ReCreateTasks();

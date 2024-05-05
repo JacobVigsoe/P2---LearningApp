@@ -22,7 +22,8 @@ public class AvatarDisplay : MonoBehaviour
     }
     public void UpdateAvatar(int characterIndex)
     {
-        mainMenuAvatar.GetComponent<Image>().sprite = characterSprites[characterIndex];
+        if(characterSprites.Length > 0)
+            mainMenuAvatar.GetComponent<Image>().sprite = characterSprites[characterIndex];
     }
 
 }

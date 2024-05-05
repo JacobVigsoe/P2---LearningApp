@@ -14,6 +14,7 @@ public class SaveData : MonoBehaviour
     private string directoryPath;
     private string userData;
     private string userDataPath;
+    private string taskDataPath;
 
     // User stuff
     public int money;
@@ -21,10 +22,15 @@ public class SaveData : MonoBehaviour
     public int currentCharacter = 1;
     public static SaveData instance;
 
+    // Shop interface
+    public TMPro.TextMeshProUGUI moneyText;
+
     void Awake()
     {
-        directoryPath = Application.dataPath + "/TaskInfo/";
-        userDataPath = Application.dataPath + "/UserData/";
+        directoryPath = Application.dataPath + "/SaveData/";
+        taskDataPath = directoryPath + "/TaskData/";
+
+        userDataPath = directoryPath;
         userData = directoryPath + "UserData.json";
 
         if (instance != null && instance != this)
@@ -33,10 +39,11 @@ public class SaveData : MonoBehaviour
             instance = this;
 
         LoadUserData();
+        AdjustMoney(0);
     }
     public void SaveTasks(TaskInfo task)
     {
-        task.filePath = directoryPath + task.taskName + ".json";
+        task.filePath = taskDataPath + task.taskName + ".json";
 
         string json = JsonUtility.ToJson(task);
 
@@ -46,9 +53,9 @@ public class SaveData : MonoBehaviour
     {
         List<TaskInfo> tasks = new List<TaskInfo>();
 
-        if (Directory.Exists(directoryPath) && Directory.EnumerateFileSystemEntries(directoryPath).Any())
+        if (Directory.Exists(taskDataPath) && Directory.EnumerateFileSystemEntries(taskDataPath).Any())
         {
-            foreach (var file in Directory.EnumerateFiles(directoryPath, "*.json"))
+            foreach (var file in Directory.EnumerateFiles(taskDataPath, "*.json"))
             {
                 string json = File.ReadAllText(file);
 
@@ -61,12 +68,13 @@ public class SaveData : MonoBehaviour
     }
     public void DeleteTask(string name)
     {
-        string filePath = directoryPath + name + ".json";
+        string filePath = taskDataPath + name + ".json";
 
-        if (Directory.Exists(directoryPath) && Directory.EnumerateFileSystemEntries(directoryPath).Any())
+        if (Directory.Exists(taskDataPath) && Directory.EnumerateFileSystemEntries(taskDataPath).Any())
         {
             taskManager.DeleteTask(name);
             File.Delete(filePath);
+            Debug.Log("Task deleted");
         }
     }
     public void SaveUserData()
@@ -97,12 +105,12 @@ public class SaveData : MonoBehaviour
 
         money = data.money;
         currentCharacter = data.currentCharacter;
-        data.charactersUnlocked = charactersUnlocked;
-
+        charactersUnlocked = data.charactersUnlocked;
     }
     public void AdjustMoney(int amount)
     {
         money += amount;
+        moneyText.text = money.ToString();
         SaveUserData();
     }
 }
