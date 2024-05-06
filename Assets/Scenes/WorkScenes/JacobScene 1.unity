@@ -17687,7 +17687,7 @@ GameObject:
   - component: {fileID: 729125524}
   - component: {fileID: 729125523}
   m_Layer: 5
-  m_Name: LVLText
+  m_Name: Coins text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19889,6 +19889,7 @@ MonoBehaviour:
   currentCharacter: 0
   moneyTextShop: {fileID: 75428288}
   moneyTextMainMenu: {fileID: 1802025561}
+  moneyTextProfile: {fileID: 1916786813}
 --- !u!1 &833149555
 GameObject:
   m_ObjectHideFlags: 0
@@ -44391,7 +44392,7 @@ GameObject:
   - component: {fileID: 1916786814}
   - component: {fileID: 1916786813}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Money display
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44413,7 +44414,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.8675, y: 0.0000019073}
+  m_AnchoredPosition: {x: -0.86751556, y: 0}
   m_SizeDelta: {x: 120.54, y: 67.51}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1916786813
@@ -44436,7 +44437,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 10
+  m_text: bruh
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -46008,7 +46009,7 @@ GameObject:
   - component: {fileID: 1962117317}
   - component: {fileID: 1962117316}
   m_Layer: 5
-  m_Name: YourLvl
+  m_Name: Your money
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
