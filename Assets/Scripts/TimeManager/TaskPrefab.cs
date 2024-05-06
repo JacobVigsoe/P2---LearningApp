@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 public class TaskPrefab : MonoBehaviour
 {
-    public SaveData saveData;
+    private SaveData saveData;
 
     [Header("References")]
     public TMP_Text taskNameText;
@@ -31,7 +31,7 @@ public class TaskPrefab : MonoBehaviour
     private void Start()
     {
         windowGraph = GameObject.FindObjectOfType<WindowGraph>();
-        saveData = GameObject.FindObjectOfType<SaveData>();
+        saveData = SaveData.instance;
         taskManager = GameObject.FindObjectOfType<TaskManager>();
         uimanager = GameObject.FindObjectOfType<UIManager>();
         targetRectTransform.DOScale(TargetScale, AnimSpeed);

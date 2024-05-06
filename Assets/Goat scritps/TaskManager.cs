@@ -14,6 +14,8 @@ public class TaskInfo
     public float avgPercentage;
     public List<float> timeDeviations = new List<float>();
     public List<float> percentages = new List<float>();
+    public List<float> secondsSpent = new List<float>();
+    public List<float> secondsAimedFor = new List<float>();
 
     public void CalculateAverage()
     {
@@ -140,7 +142,7 @@ public class TaskManager : MonoBehaviour
         tasks.Remove(tasks.Find(x => x.taskName == name));
         ReCreateTasks();
     }
-    public void WriteToTask(float difference, float percentage)
+    public void WriteToTask(float difference, float percentage, float secondsSpent, float secondsAimedFor)
     {
         name = lastClickedTask;
 
@@ -148,6 +150,8 @@ public class TaskManager : MonoBehaviour
 
         task.timeDeviations.Add(difference);
         task.percentages.Add(percentage);
+        task.secondsSpent.Add(secondsSpent);
+        task.secondsAimedFor.Add(secondsAimedFor);
 
         task.CalculateAverage();
 

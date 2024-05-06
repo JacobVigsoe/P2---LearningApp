@@ -1,0 +1,18 @@
+{
+    "filePath": "/Users/marcelkress/Desktop/Unity Projects/Medialogi/P2---LearningApp/Assets/SaveData//TaskData/testyuh.json",
+    "taskName": "testyuh",
+    "avgTimeDeviation": 5.258648872375488,
+    "avgPercentage": 24.87644386291504,
+    "timeDeviations": [
+        5.258648872375488
+    ],
+    "percentages": [
+        24.87644386291504
+    ],
+    "secondsSpent": [
+        1.7413512468338013
+    ],
+    "secondsAimedFor": [
+        7.0
+    ]
+}

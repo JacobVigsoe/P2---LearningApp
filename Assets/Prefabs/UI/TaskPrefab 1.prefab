@@ -609,7 +609,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2797523e99880cc48932651c55611e85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  saveData: {fileID: 0}
   taskNameText: {fileID: 435075616229994079}
   nextButton: {fileID: 6287307008799705634}
   arrowButton: {fileID: 2344760326555576234}

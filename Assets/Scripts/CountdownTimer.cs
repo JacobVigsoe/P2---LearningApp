@@ -28,7 +28,6 @@ public class CountdownTimer : MonoBehaviour
     {
         if (isCountingDown)
         {
-            
             currentTime += Time.deltaTime;
             if (currentTime <= 0)
             {
@@ -38,8 +37,6 @@ public class CountdownTimer : MonoBehaviour
             }
         }
     }
-
-
 
     public void StartTimer(float duration)
     {
@@ -64,7 +61,7 @@ public class CountdownTimer : MonoBehaviour
         Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
 
         coinsManager.UpdateExperienceAmount(accuracyPercentage);
-        taskManager.WriteToTask(timeDifference, accuracyPercentage);
+        taskManager.WriteToTask(timeDifference, accuracyPercentage, currentTime, originalTime);
         windowGraph.UpdateGraph();
     }
 
