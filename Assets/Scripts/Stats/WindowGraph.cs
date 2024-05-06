@@ -16,6 +16,8 @@ public class WindowGraph : MonoBehaviour
     private RectTransform dashTemplateX;
     private RectTransform dashTemplateY;
     private List<List<GameObject>> gameObjectLists; // List of lists to store game objects for each graph
+    [SerializeField] private Color[] graphColors; // Define an array of colors for each graph
+
     public TaskManager taskManager;
 
     [SerializeField] private int ShowLastListAmount = -1;
@@ -72,18 +74,17 @@ public class WindowGraph : MonoBehaviour
         gameObjectLists.Clear();
     }
 
-    private GameObject CreateCircle(Vector2 anchoredPosition) 
+    private GameObject CreateCircle(Vector2 anchoredPosition, int graphIndex)
     {
         GameObject gameObject = new GameObject("circle", typeof(Image));
-        gameObject.transform.SetParent(graphContainer,false);
+        gameObject.transform.SetParent(graphContainer, false);
         gameObject.GetComponent<Image>().sprite = circleSprite;
-        gameObject.GetComponent<Image>().color = new Color(46f / 255f, 112f / 255f, 170f / 255f, 1f);
+        gameObject.GetComponent<Image>().color = graphColors[graphIndex]; // Use the index to access the corresponding color
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = anchoredPosition;
         rectTransform.sizeDelta = new Vector2(22, 22);
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
-
         return gameObject;
     }
 
@@ -153,11 +154,11 @@ public class WindowGraph : MonoBehaviour
         {
             float xPosition = xSize + xIndex * xSize;
             float yPosition = ((valueList[i] - yMinimum) / (yMaximum - yMinimum)) * graphHeight;
-            GameObject circleGameObject = CreateCircle(new Vector2(xPosition, yPosition));
+            GameObject circleGameObject = CreateCircle(new Vector2(xPosition, yPosition), gameObjectLists.Count - 1);
             gameObjectList.Add(circleGameObject);
             if(lastCircleGameObject != null )
             {
-                GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
+                GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition, gameObjectLists.Count - 1);
                 gameObjectList.Add(dotConnectionGameObject);
             }
             lastCircleGameObject = circleGameObject;
@@ -199,19 +200,18 @@ public class WindowGraph : MonoBehaviour
         }
     }
 
-    
-    private GameObject CreateDotConnection(Vector2 dotPositionA, Vector2 dotPositionB)
+    private GameObject CreateDotConnection(Vector2 dotPositionA, Vector2 dotPositionB, int graphIndex)
     {
-        GameObject gameObject = new GameObject("dotConnection", typeof (Image));
-        gameObject.transform.SetParent(graphContainer,false);
-        gameObject.GetComponent<Image>().color = new Color(46f/255f, 112f/255f, 170f/255f, 1f);
+        GameObject gameObject = new GameObject("dotConnection", typeof(Image));
+        gameObject.transform.SetParent(graphContainer, false);
+        gameObject.GetComponent<Image>().color = graphColors[graphIndex]; // Use the index to access the corresponding color
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
         Vector2 dir = (dotPositionB - dotPositionA).normalized;
         float distance = Vector2.Distance(dotPositionA, dotPositionB);
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
         rectTransform.sizeDelta = new Vector2(distance, 10f);
-        rectTransform.anchoredPosition = dotPositionA + dir  * distance * .5f; // S� den bliver positioned i midten af de 2 points (.5f)
+        rectTransform.anchoredPosition = dotPositionA + dir * distance * .5f; // S� den bliver positioned i midten af de 2 points (.5f)
         rectTransform.localEulerAngles = new Vector3(0, 0, UtilsClass.GetAngleFromVectorFloat(dir));
         return gameObject;
     }
