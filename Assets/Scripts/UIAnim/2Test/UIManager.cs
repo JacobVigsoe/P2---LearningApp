@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject confirmButton;
     [SerializeField] private GameObject endTaskButton;
     [SerializeField] private GameObject confirmText;
+    [SerializeField] private Button backGroundButton;
 
     // Offsets and positions
     private Vector2 origin = new Vector2(0, 0);
@@ -38,6 +39,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
+        backGroundButton.interactable = false;
 
         mainMenu.DOAnchorPos(origin, animationSpeed);
         Back();
@@ -105,6 +107,11 @@ public class UIManager : MonoBehaviour
         TaskStatsMenu.DOAnchorPos(origin, animationSpeed);
         IdleMenu.DOAnchorPos(origin, animationSpeed);
         TaskCompletedMenu.DOAnchorPos(origin, animationSpeed);
+
+        confirmText.SetActive(false);
+        confirmButton.SetActive(false);
+        endTaskButton.SetActive(true);
+        backGroundButton.interactable = false;
     }
 
 
@@ -180,10 +187,18 @@ public class UIManager : MonoBehaviour
 
     public void ConfirmButton()
     {
+        backGroundButton.interactable = true;
         confirmText.SetActive(true);
         confirmButton.SetActive(true);
         endTaskButton.SetActive(false);
     }
+    public void UnConfirmButton()
+    {
+        confirmText.SetActive(false);
+        confirmButton.SetActive(false);
+        endTaskButton.SetActive(true);
+        backGroundButton.interactable = false;
+    }   
 
     private IEnumerator CloseNoteCoroutine(int index)
     {
