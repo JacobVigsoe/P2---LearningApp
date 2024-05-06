@@ -5,6 +5,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Linq;
 using System;
+using System.Threading.Tasks;
 
 public class SaveData : MonoBehaviour
 {
@@ -43,6 +44,15 @@ public class SaveData : MonoBehaviour
         LoadUserData();
         AdjustMoney(0);
     }
+
+    void Start()
+    {
+        if (taskManager.tasks.Count == 0)
+        {
+            // Lav en besked om at man skal trykke plus!
+        }
+    }
+
     public void SaveTasks(TaskInfo task)
     {
         task.filePath = taskDataPath + task.taskName + ".json";
@@ -113,7 +123,7 @@ public class SaveData : MonoBehaviour
     {
         money += amount;
         moneyTextShop.text = money.ToString();
-        moneyTextMainMenu.text = money.ToString();
+        moneyTextMainMenu.text = "$ " + money.ToString();
         moneyTextProfile.text = money.ToString();
         SaveUserData();
     }
