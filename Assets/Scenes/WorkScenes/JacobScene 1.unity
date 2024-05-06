@@ -42943,8 +42943,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circleSprite: {fileID: -2413806693520163455, guid: 25b1019521873d04e9dfb752e9ec6a92, type: 3}
   graphColors:
-  - {r: 0.0048570633, g: 1, b: 0, a: 1}
-  - {r: 1, g: 0.26329383, b: 0, a: 1}
+  - {r: 0.21960786, g: 0.5294118, b: 0.73333335, a: 1}
+  - {r: 0.21568629, g: 0.5294118, b: 0.7294118, a: 0.6666667}
   taskManager: {fileID: 1039557167}
   ShowLastListAmount: 7
 --- !u!1 &2034047592
