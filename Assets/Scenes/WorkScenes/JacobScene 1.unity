@@ -17490,7 +17490,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 720, y: -1119.6001}
+  m_AnchoredPosition: {x: 720, y: -1159.6001}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &720646736
@@ -19887,7 +19887,8 @@ MonoBehaviour:
   money: 500
   charactersUnlocked: 010000000000
   currentCharacter: 0
-  moneyText: {fileID: 75428288}
+  moneyTextShop: {fileID: 75428288}
+  moneyTextMainMenu: {fileID: 1802025561}
 --- !u!1 &833149555
 GameObject:
   m_ObjectHideFlags: 0

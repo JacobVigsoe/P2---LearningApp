@@ -26,8 +26,6 @@ public class CoinsManager : MonoBehaviour
     public CoinsStats coinsStats;
     public SaveData saveData;
 
-    public TMP_Text coinstext;
-    public TMP_Text profileCoinsText;
     public TMP_Text coinsToClaimText;
 
 
@@ -38,11 +36,6 @@ public class CoinsManager : MonoBehaviour
 
         // Concatenate "XP" with the XP value string
         string formattedCurrentCoinsText = "Coins " + coinValueText;
-
-
-        // Set the formatted text to the Text component
-        coinstext.text = formattedCurrentCoinsText;
-        profileCoinsText.text = formattedCurrentCoinsText;
 
     }
 
