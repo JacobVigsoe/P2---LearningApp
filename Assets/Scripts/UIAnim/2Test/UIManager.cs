@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private float animationSpeed;
     public bool noteIsOpen = false;
+    private float resolutionWidth;
 
     [Header("Menus")]
     [SerializeField] private RectTransform mainMenu;
@@ -24,18 +25,20 @@ public class UIManager : MonoBehaviour
     public int currentNoteIndex = 0;
 
     [Header("Buttons")]
-    //[SerializeField] private RectTransform closeButton;
-    //[SerializeField] private GameObject nextNoteButton;
+    [SerializeField] private GameObject confirmButton;
+    [SerializeField] private GameObject endTaskButton;
+    [SerializeField] private GameObject confirmText;
 
     // Offsets and positions
     private Vector2 origin = new Vector2(0, 0);
-    private Vector2 offsetleft = new Vector2(-1440, 0);
+    private Vector2 offsetleft = new Vector2(-1500, 0);
     private Vector2 offsetUp = new Vector2(0, 3040);
-    private Vector2 offsetRight = new Vector2(1440, 0);
+    private Vector2 offsetRight = new Vector2(1500, 0);
     private Vector2 offsetDown = new Vector2(0, -3040);
 
     void Start()
     {
+
         mainMenu.DOAnchorPos(origin, animationSpeed);
         Back();
     }
@@ -173,6 +176,13 @@ public class UIManager : MonoBehaviour
         
         notesList[currentNoteIndex].SetActive(true);
         notesList[currentNoteIndex].GetComponent<RectTransform>().DOAnchorPos(origin, animationSpeed).SetEase(Ease.InOutSine);
+    }
+
+    public void ConfirmButton()
+    {
+        confirmText.SetActive(true);
+        confirmButton.SetActive(true);
+        endTaskButton.SetActive(false);
     }
 
     private IEnumerator CloseNoteCoroutine(int index)
