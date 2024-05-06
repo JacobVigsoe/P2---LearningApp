@@ -21,7 +21,7 @@ public class SpawnOnObject : MonoBehaviour
 
     public GameObject HousePrefab;
 
-    public XPStats xpstats;
+    public CoinsStats xpstats;
 
     void Start()
     {
@@ -113,7 +113,7 @@ public class SpawnOnObject : MonoBehaviour
 
     void SpawnRandomTree(Vector3 position, Quaternion rotation)
     {
-        if (xpstats != null && xpstats.CurrentLevel == 5)
+        if (xpstats != null)
         {
             Debug.Log("Level 5 reached");
             GameObject housePrefab = HousePrefab;

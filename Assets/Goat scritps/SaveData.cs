@@ -22,8 +22,10 @@ public class SaveData : MonoBehaviour
     public int currentCharacter = 1;
     public static SaveData instance;
 
-    // Shop interface
-    public TMPro.TextMeshProUGUI moneyText;
+    // Money display references
+    public TMPro.TextMeshProUGUI moneyTextShop;
+    public TMPro.TextMeshProUGUI moneyTextMainMenu;
+    public TMPro.TextMeshProUGUI moneyTextProfile;
 
     void Awake()
     {
@@ -110,7 +112,9 @@ public class SaveData : MonoBehaviour
     public void AdjustMoney(int amount)
     {
         money += amount;
-        moneyText.text = money.ToString();
+        moneyTextShop.text = money.ToString();
+        moneyTextMainMenu.text = money.ToString();
+        moneyTextProfile.text = money.ToString();
         SaveUserData();
     }
 }
