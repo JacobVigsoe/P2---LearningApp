@@ -47,7 +47,7 @@ public class SaveData : MonoBehaviour
     {
         task.filePath = taskDataPath + task.taskName + ".json";
 
-        string json = JsonUtility.ToJson(task);
+        string json = JsonUtility.ToJson(task, true);
 
         File.WriteAllText(task.filePath, json);
     }
