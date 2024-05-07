@@ -76,7 +76,6 @@ public class CountdownTimer : MonoBehaviour
         currentTime = 0;
         originalTime = timeToAdd;
 
-        // Start counting down if not already
         StartTimer(originalTime);
     }
 }
