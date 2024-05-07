@@ -34,19 +34,28 @@ public class TaskInfo
         }
         avgPercentage /= percentages.Count;
     }
-
-    public List<int> ReturnAsInt()
+    public List<int> ReturnAimedAsInt()
     {
         List<int> intList = new List<int>();
 
-        foreach (float value in percentages)
+        foreach (float value in secondsAimedFor)
         {
             intList.Add((int)value);
         }
 
         return intList;
     }
+    public List<int> ReturnSpentAsInt()
+    {
+        List<int> intList = new List<int>();
 
+        foreach (float value in secondsSpent)
+        {
+            intList.Add((int)value);
+        }
+
+        return intList;
+    }
 }
 
 public class TaskManager : MonoBehaviour
@@ -159,12 +168,17 @@ public class TaskManager : MonoBehaviour
         
         saveData.SaveTasks(task);
     }
-
-    public List<int> GetPercentage()
+    public List<int> GetSecondsAimedFor()
     {
         TaskInfo task = tasks.Find(x => x.taskName == lastClickedTask);
 
-        return task.ReturnAsInt();
+        return task.ReturnAimedAsInt();
+    }
+    public List<int> GetSecondsSpent()
+    {
+        TaskInfo task = tasks.Find(x => x.taskName == lastClickedTask);
+
+        return task.ReturnSpentAsInt();
     }
 
 }

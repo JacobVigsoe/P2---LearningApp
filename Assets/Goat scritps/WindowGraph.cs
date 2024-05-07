@@ -22,7 +22,8 @@ public class WindowGraph : MonoBehaviour
 
     [SerializeField] private int ShowLastListAmount = -1;
 
-    private List<int> valueListPercent;
+    private List<int> valueListAim;
+    private List<int> valueListSpent;
 
     private void Awake()
     {
@@ -40,15 +41,16 @@ public class WindowGraph : MonoBehaviour
         ClearGraph();
         // Get accuracy values from AccuracyManager and convert them to integers
         if(taskManager.lastClickedTask != "xxxxxxxxx")
-            valueListPercent = taskManager.GetPercentage();
-
+        {
+            valueListAim = taskManager.GetSecondsAimedFor();
+            valueListSpent = taskManager.GetSecondsSpent();
+        }
 
         if (gameObjectLists.Count == 0)
         {
-            ShowGraphPercentage(valueListPercent, ShowLastListAmount, (int _i) => "" + (_i + 1), (float _f) => "" + Mathf.RoundToInt(_f));
-            ShowGraphPercentage(CreateRandomValueList(8), ShowLastListAmount, (int _i) => "" + (_i + 1), (float _f) => "" + Mathf.RoundToInt(_f));
+            ShowGraphPercentage(valueListAim, ShowLastListAmount, (int _i) => "" + (_i + 1), (float _f) => "" + Mathf.RoundToInt(_f));
+            ShowGraphPercentage(valueListSpent, ShowLastListAmount, (int _i) => "" + (_i + 1), (float _f) => "" + Mathf.RoundToInt(_f));
         }
-
     }
     private List<int> CreateRandomValueList(int length)
     {
@@ -90,7 +92,6 @@ public class WindowGraph : MonoBehaviour
 
     private void ShowGraphPercentage(List<int> valueList, int maxVisibleValueAmount = -1, Func<int, string> getAxisLabelX = null, Func<float, string> getAxisLabelY = null)
     {
-
         if(getAxisLabelX == null)
         {
             getAxisLabelX = delegate (int _i) { return _i.ToString(); };
@@ -105,7 +106,6 @@ public class WindowGraph : MonoBehaviour
         {
             maxVisibleValueAmount = valueList.Count;
         }
-        
 
         List<GameObject> gameObjectList = new List<GameObject>(); // Create a new list to store game objects for this graph
         gameObjectLists.Add(gameObjectList); // Add the list to the list of lists
