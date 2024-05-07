@@ -30,6 +30,8 @@ public class SaveData : MonoBehaviour
 
     void Awake()
     {
+        CreateDirectory(Application.persistentDataPath + "/SaveData/");
+        CreateDirectory(Application.persistentDataPath + "/SaveData/TaskData/");
         directoryPath = Application.persistentDataPath + "/SaveData/";
         taskDataPath = directoryPath + "/TaskData/";
 
@@ -43,6 +45,12 @@ public class SaveData : MonoBehaviour
 
         LoadUserData();
         AdjustMoney(0);
+    }
+
+    private void CreateDirectory(string path)
+    {
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
     }
 
     void Start()
