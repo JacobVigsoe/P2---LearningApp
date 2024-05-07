@@ -30,7 +30,7 @@ public class SaveData : MonoBehaviour
 
     void Awake()
     {
-        directoryPath = Application.dataPath + "/SaveData/";
+        directoryPath = Application.persistentDataPath + "/SaveData/";
         taskDataPath = directoryPath + "/TaskData/";
 
         userDataPath = directoryPath;

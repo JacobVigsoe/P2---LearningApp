@@ -90,7 +90,7 @@ public class TaskManager : MonoBehaviour
 
     void Awake()
     {
-        filePath = Application.dataPath + "/TaskInfo";
+        filePath = Application.persistentDataPath + "/TaskInfo";
     }
     void Start()
     {

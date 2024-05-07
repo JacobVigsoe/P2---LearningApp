@@ -40,7 +40,7 @@ public class AccuracyManager : MonoBehaviour
 
     private void LoadAccuracyValues()
     {
-        string filePath = Application.dataPath + taskManager.lastClickedTask  + ".json";
+        string filePath = Application.persistentDataPath + taskManager.lastClickedTask  + ".json";
 
         if (File.Exists(filePath))
         {
@@ -74,7 +74,7 @@ public class AccuracyManager : MonoBehaviour
 
     public void SaveAccuracyToCSV(float accuracy)
     {
-        string filePath = Application.dataPath + "/accuracy.csv";
+        string filePath = Application.persistentDataPath + "/accuracy.csv";
 
         // Check if file exists, if not, create it and write headers
         if (!File.Exists(filePath))
