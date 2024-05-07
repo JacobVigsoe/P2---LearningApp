@@ -81,6 +81,11 @@ public class TaskManager : MonoBehaviour
     public TMP_Text avgTimeDeviation;
     public TMP_Text avgPercentage;
 
+    // Dev task stuff
+    public TMP_Text devStats;
+    public GameObject devStatsPanel;
+
+    // The last clicked task
     public string lastClickedTask;
 
     void Awake()
@@ -139,6 +144,32 @@ public class TaskManager : MonoBehaviour
             avgPercentage.text = task.avgPercentage.ToString("F2") + " %";
         }
     }
+    public void OpenDevStats()
+    {
+        devStatsPanel.SetActive(true);
+
+        TaskInfo task = tasks.Find(x => x.taskName == lastClickedTask);
+
+        devStats.text = task.taskName + "\n" + "Aim: \n";
+
+        foreach (float number in task.secondsAimedFor)
+        {
+            devStats.text += number.ToString("F2") + " sec\n";
+        }
+
+        devStats.text += "\nSpent: \n";
+
+        foreach (float number in task.secondsSpent)
+        {
+            devStats.text += number.ToString("F2") + " sec\n";
+        }
+    }
+
+    public void CloseDevStats()
+    {
+        devStatsPanel.SetActive(false);
+    }
+
     public void EditButton()
     {
         foreach (TaskPrefab child in taskParent.GetComponentsInChildren<TaskPrefab>())
