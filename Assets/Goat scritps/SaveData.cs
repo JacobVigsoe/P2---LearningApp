@@ -37,6 +37,7 @@ public class SaveData : MonoBehaviour
 
         userDataPath = directoryPath;
         userData = directoryPath + "UserData.json";
+        Debug.Log(userDataPath);
 
         if (instance != null && instance != this)
             Destroy(gameObject);

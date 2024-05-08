@@ -79,7 +79,8 @@ public class AvatarSelection : MonoBehaviour
         //Checking if money is equal to or greater than the price of the avatar and thereby making the Buy button interactable.
         if (SaveData.instance.money >= price)
         {
-            buyButton.SetActive(true);
+            if(SaveData.instance.charactersUnlocked[avatarIndex] == false)
+                buyButton.SetActive(true);
             //buyButton.GetComponent<Button>().interactable = true;
             //buyButton.GetComponent<Image>().color = Color.white;
 
