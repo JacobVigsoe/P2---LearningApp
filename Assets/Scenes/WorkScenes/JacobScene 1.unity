@@ -20222,6 +20222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   saveData: {fileID: 831022836}
   taskNameInput: {fileID: 1313408448}
+  doneButton: {fileID: 1005600483}
   taskParent: {fileID: 720646735}
   taskPrefab: {fileID: 5729618763574534637, guid: 80fbe2c384e48b742851a88d99c10caf, type: 3}
   gridCellSize: {x: 0, y: 0}
