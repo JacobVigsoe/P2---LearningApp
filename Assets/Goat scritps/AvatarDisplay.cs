@@ -12,6 +12,7 @@ public class AvatarDisplay : MonoBehaviour
     public GameObject idleAvatar;
     public GameObject taskStatsAvatar;
     public GameObject setTimeAvatar;
+    public GameObject finishedTaskAvatar;
     public Sprite[] characterSprites;
     public static AvatarDisplay instance;
     void Awake()
@@ -35,6 +36,7 @@ public class AvatarDisplay : MonoBehaviour
             idleAvatar.GetComponent<Image>().sprite = characterSprites[characterIndex];
             taskStatsAvatar.GetComponent<Image>().sprite = characterSprites[characterIndex];
             setTimeAvatar.GetComponent<Image>().sprite = characterSprites[characterIndex];
+            finishedTaskAvatar.GetComponent<Image>().sprite = characterSprites[characterIndex];
         }
     }
 
