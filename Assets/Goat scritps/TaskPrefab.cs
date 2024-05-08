@@ -49,8 +49,10 @@ public class TaskPrefab : MonoBehaviour
     public void OnButtonClick()
     {
         uimanager.taskStatsMenu();
+
         taskManager.OpenTask(TaskName);
         taskManager.lastClickedTask = TaskName;
+        
         windowGraph.UpdateGraph();
     }
 
