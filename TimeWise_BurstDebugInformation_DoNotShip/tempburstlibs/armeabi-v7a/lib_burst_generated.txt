@@ -69,7 +69,6 @@ Library: C:\Users\soren\Documents\GitHub\P2---LearningApp\Temp\BurstOutput\tempb
 --assembly-defines=mscorlib;
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\soren\Documents\GitHub\P2---LearningApp\Temp\Burst
---debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/2022.3.25f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=C:\Users\soren\Documents\GitHub\P2---LearningApp\Library\Burst
 --output=C:\Users\soren\Documents\GitHub\P2---LearningApp\Temp\BurstOutput\tempburstlibs\armeabi-v7a\lib_burst_generated
