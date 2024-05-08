@@ -5,6 +5,8 @@ using UnityEngine;
 using TMPro;
 using System.Linq;
 using System;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class TaskInfo 
 {
@@ -65,6 +67,7 @@ public class TaskManager : MonoBehaviour
     // Task list settings
     public List<TaskInfo> tasks = new List<TaskInfo>();
     public TMP_InputField taskNameInput;
+    public Button doneButton;
     private string filePath;
 
     // Task prefab settings
@@ -109,8 +112,23 @@ public class TaskManager : MonoBehaviour
         
         saveData.SaveTasks(tasks[tasks.Count - 1]);
 
+        taskNameInput.text = "";
+
         ReCreateTasks();
     }
+
+    void Update()
+    {
+        if(taskNameInput.text == "")
+        {
+            doneButton.interactable = false;
+        }
+        else
+        {
+            doneButton.interactable = true;
+        } 
+    }
+
     public void ReCreateTasks()
     {
         foreach (Transform child in taskParent)
