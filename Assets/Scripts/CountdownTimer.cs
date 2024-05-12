@@ -50,6 +50,7 @@ public class CountdownTimer : MonoBehaviour
 
     void OnApplicationPause(bool pauseStatus)
     {
+        Debug.Log(pauseStatus);
         HandleApplicationStateChange(pauseStatus);
     }
 
@@ -60,7 +61,6 @@ public class CountdownTimer : MonoBehaviour
 
     private void HandleApplicationStateChange(bool isPaused)
     {
-        Debug.Log(isPaused);
         if (isPaused)
         {
             // The application is paused (locked, in background, or lost focus)
