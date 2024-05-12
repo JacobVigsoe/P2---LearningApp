@@ -63,6 +63,7 @@ public class TaskInfo
 public class TaskManager : MonoBehaviour
 {
     public SaveData saveData;
+    
 
     // Task list settings
     public List<TaskInfo> tasks = new List<TaskInfo>();

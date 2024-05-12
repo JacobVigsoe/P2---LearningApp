@@ -54,8 +54,6 @@ public class AvatarSelection : MonoBehaviour
             chosenBorder.SetActive(false);
         }
 
-
-
         //Getting the price of the avatar
         price = int.Parse(priceTxt.text);
     }

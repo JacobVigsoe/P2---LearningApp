@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 public class SaveData : MonoBehaviour
 {
     public TaskManager taskManager;
+    public static SaveData instance;
     
     // Directory and file paths
     private string directoryPath;
@@ -21,7 +22,6 @@ public class SaveData : MonoBehaviour
     public int money;
     public bool[] charactersUnlocked = new bool[6] {true, false, false, false, false, false};
     public int currentCharacter = 1;
-    public static SaveData instance;
 
     // Money display references
     public TMPro.TextMeshProUGUI moneyTextShop;

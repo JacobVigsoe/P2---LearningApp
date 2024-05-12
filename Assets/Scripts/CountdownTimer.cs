@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.IO;
+using System;
 
 public class CountdownTimer : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class CountdownTimer : MonoBehaviour
     private TaskManager taskManager;
     private WindowGraph windowGraph;
     private CoinsManager coinsManager;
+
+    private DateTime pauseTime;
+    private bool wasCountingDown;
 
     void Start()
     {
@@ -42,6 +46,50 @@ public class CountdownTimer : MonoBehaviour
     {
         originalTime = duration;
         isCountingDown = true;
+    }
+
+    void OnApplicationPause(bool pauseStatus)
+    {
+        HandleApplicationStateChange(pauseStatus);
+    }
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        HandleApplicationStateChange(!hasFocus);
+    }
+
+    private void HandleApplicationStateChange(bool isPaused)
+    {
+        Debug.Log(isPaused);
+        if (isPaused)
+        {
+            // The application is paused (locked, in background, or lost focus)
+            // Save the current time and whether the timer was counting down
+            pauseTime = DateTime.Now;
+            wasCountingDown = isCountingDown;
+            isCountingDown = false;
+        }
+        else
+        {
+            // The application is resumed or regained focus
+            // If the timer was counting down when the app was paused, resume the timer
+            if (wasCountingDown)
+            {
+                // Calculate the duration the application was paused
+                TimeSpan pausedDuration = DateTime.Now - pauseTime;
+
+                // Subtract the paused duration from the current time
+                currentTime -= (float)pausedDuration.TotalSeconds;
+
+                // Ensure currentTime doesn't go below zero
+                if (currentTime < 0)
+                {
+                    currentTime = 0;
+                }
+
+                isCountingDown = true;
+            }
+        }
     }
 
     public void StopTimer()
