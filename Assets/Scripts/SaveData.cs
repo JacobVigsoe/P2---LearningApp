@@ -111,7 +111,7 @@ public class SaveData : MonoBehaviour
         data.charactersUnlocked = charactersUnlocked;
 
         // Save the UserData class to a json file
-        string json = JsonUtility.ToJson(data);
+        string json = JsonUtility.ToJson(data, true);
 
         File.WriteAllText(userData, json);
     }

@@ -42,33 +42,33 @@ public class CoinsManager : MonoBehaviour
     public void UpdateExperienceAmount(float Coins)
     {
         // Check if valueToCheck is between minValue and maxValue
-        if (Coins > 0 && Coins < 20)
+        if (Coins >= 0 && Coins < 20)
         {
-            coinsToClaimText.text = 20.ToString() + " Coins";
+            coinsToClaimText.text = 20.ToString();
             saveData.AdjustMoney(20);
             Debug.Log("Gave 20 Coins");
         }
         else if (Coins > 20 && Coins < 40)
         {
-            coinsToClaimText.text = 40.ToString() + " Coins";
+            coinsToClaimText.text = 40.ToString();
             saveData.AdjustMoney(40);
             Debug.Log("Gave 40 Coins");
         }
         else if (Coins > 40 && Coins < 60)
         {
-            coinsToClaimText.text = 160.ToString() + " Coins";
+            coinsToClaimText.text = 160.ToString();
             saveData.AdjustMoney(160);
             Debug.Log("Gave 160 Coins");
         }
         else if (Coins > 60 && Coins < 80)
         {
-            coinsToClaimText.text = 280.ToString() + " Coins";
+            coinsToClaimText.text = 280.ToString();
             saveData.AdjustMoney(280);
             Debug.Log("Gave 280 Coins");
         }
         else if (Coins > 80 && Coins < 100)
         {
-            coinsToClaimText.text = 400.ToString() + " Coins";
+            coinsToClaimText.text = 400.ToString();
             saveData.AdjustMoney(400);
             Debug.Log("Gave 400 Coins");
         }

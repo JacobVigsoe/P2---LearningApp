@@ -41,7 +41,7 @@ public class TaskPrefab : MonoBehaviour
     {
         TaskName = taskName;
         taskNameText.text = taskName;
-        avgTime.text += avgDeviation.ToString("F2") + "s";
+        avgTime.text += avgDeviation.ToString("F2") + "%";
  
         nextButton.onClick.AddListener(OnButtonClick); // Subscribe to the button click event
     }
@@ -50,8 +50,8 @@ public class TaskPrefab : MonoBehaviour
     {
         uimanager.taskStatsMenu();
 
-        taskManager.OpenTask(TaskName);
         taskManager.lastClickedTask = TaskName;
+        taskManager.OpenTask(TaskName);
         
         windowGraph.UpdateGraph();
     }

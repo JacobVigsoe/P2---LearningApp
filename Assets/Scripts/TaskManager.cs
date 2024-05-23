@@ -84,6 +84,7 @@ public class TaskManager : MonoBehaviour
     public TMP_Text title;
     public TMP_Text avgTimeDeviation;
     public TMP_Text avgPercentage;
+    public TMP_Text lastSpentText;
 
     // Dev task stuff
     public TMP_Text devStats;
@@ -144,7 +145,7 @@ public class TaskManager : MonoBehaviour
             Vector3 taskPosition = taskParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
             GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, taskParent);
             TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
-            newTaskPrefab.SetTaskInfo(task.taskName, task.avgTimeDeviation); // Pass info to TaskPrefab
+            newTaskPrefab.SetTaskInfo(task.taskName, task.avgPercentage); // Pass info to TaskPrefab
         }
     }
     public void OpenTask(string taskName)
@@ -155,10 +156,37 @@ public class TaskManager : MonoBehaviour
             
             TaskInfo task = tasks.Find(x => x.taskName == taskName);
             
+            // DISPLAYING CORRECT DEVIATION
             if(task.avgTimeDeviation < 60)
                 avgTimeDeviation.text = task.avgTimeDeviation.ToString("F2") + " sec";
+
+            else if(task.avgTimeDeviation < 3600)
+            {
+                TimeSpan time = TimeSpan.FromSeconds(task.avgTimeDeviation);
+                avgTimeDeviation.text = string.Format("{0:D2}min {1:D2}s", time.Minutes, time.Seconds);
+            }
             else
-                avgTimeDeviation.text = (task.avgTimeDeviation / 60).ToString("F2") + " min";
+            {
+                TimeSpan time = TimeSpan.FromSeconds(task.avgTimeDeviation);
+                avgTimeDeviation.text = string.Format("{0:D2}hr {1:D2}min", time.Hours, time.Minutes);
+            }
+
+
+            // DISPLAYING CORRECT LAST TIME SPENT
+            float lastSpentSeconds = task.secondsSpent[task.secondsSpent.Count - 1];
+            if(lastSpentSeconds < 60)
+                lastSpentText.text = lastSpentSeconds.ToString("F2") + " sec";
+
+            else if(lastSpentSeconds < 3600)
+            {
+                TimeSpan time = TimeSpan.FromSeconds(lastSpentSeconds);
+                lastSpentText.text = string.Format("{0:D2}min {1:D2}s", time.Minutes, time.Seconds);
+            }
+            else
+            {
+                TimeSpan time = TimeSpan.FromSeconds(lastSpentSeconds);
+                lastSpentText.text = string.Format("{0:D2}hr {1:D2}min", time.Hours, time.Minutes);
+            }
 
             avgPercentage.text = task.avgPercentage.ToString("F2") + " %";
         }
