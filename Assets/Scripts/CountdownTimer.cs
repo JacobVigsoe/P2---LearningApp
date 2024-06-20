@@ -42,39 +42,59 @@ public class CountdownTimer : MonoBehaviour
     }
     public void StopTimer()
     {
-        // Getting the time the user presses to end the task
         DateTime endTime = DateTime.Now;
-
-        // Calculate the absolute difference between original time and current time
-        TimeSpan timespan = (startTime - endTime).Duration();
+        TimeSpan timespan = CalculateTimeSpent(endTime);
         float timeSpent = (float)timespan.TotalSeconds;
 
-        //Debug.Log("Time spent:" + timeSpent);
+        float accuracyPercentage = CalculateAccuracyPercentage(timeSpent);
+        float timeOff = CalculateTimeOff(timeSpent);
 
-        // Calculate accuracy percentage based on the ratio of time difference to original time
+        UpdateUI(timespan, timeOff);
+
+        Debug.Log("Time off: " + timeOff);
+        Debug.Log("Accuracy: " + accuracyPercentage);
+
+        UpdateOtherClasses(accuracyPercentage, timeOff, timeSpent);
+
+        taskManager.ReCreateTasks();
+    }
+
+    private TimeSpan CalculateTimeSpent(DateTime endTime)
+    {
+        return endTime - startTime;
+    }
+
+    private float CalculateAccuracyPercentage(float timeSpent)
+    {
         float accuracyPercentage = 100f * (timeSpent / duration);
 
-        if (accuracyPercentage <= 0)
+        if (timeSpent > duration)
         {
-            accuracyPercentage = 0;
+            accuracyPercentage = 200f - accuracyPercentage;
         }
 
-        // Calculating what the user missed by
-        float timeOff = duration - timeSpent;
+        return Math.Max(accuracyPercentage, 0);
+    }
 
-        // Setting the texts to display the values
+    private float CalculateTimeOff(float timeSpent)
+    {
+        return Math.Abs(duration - timeSpent);
+    }
+
+    private void UpdateUI(TimeSpan timespan, float timeOff)
+    {
         estimatedTimeText.text = ConvertSecondsToHoursMinutes(duration);
         spentTimeText.text = timespan.ToString(@"hh\:mm");
-        minutesOffText.text = ConvertSecondsToHoursMinutes(timeOff) + " off!";
+        minutesOffText.text = ConvertSecondsToHoursMinutes(Math.Abs(timeOff)) + " off!";
+    }
 
-        // Updating other classes
+    private void UpdateOtherClasses(float accuracyPercentage, float timeOff, float timeSpent)
+    {
         coinsManager.UpdateExperienceAmount(accuracyPercentage);
         taskManager.WriteToTask(timeOff, accuracyPercentage, timeSpent, duration);
         windowGraph.UpdateGraph();
-
-        // Redrawing the classes on main menu so that the values are updated
-        taskManager.ReCreateTasks();
     }
+
 
     /// <summary>
     /// Converts a float into a string in the format hours:minutes
