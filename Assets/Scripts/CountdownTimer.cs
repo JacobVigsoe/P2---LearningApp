@@ -40,28 +40,37 @@ public class CountdownTimer : MonoBehaviour
 
         Debug.Log(startTime);
     }
+   
     public void StopTimer()
     {
+        // Get the current time
         DateTime endTime = DateTime.Now;
-        TimeSpan timespan = CalculateTimeSpent(endTime);
+
+        // Calculate the time span between the start time and end time
+        TimeSpan timespan = endTime - startTime;
+
+        // Convert the time span to total seconds
         float timeSpent = (float)timespan.TotalSeconds;
 
+        // Calculate the accuracy percentage based on the time spent
         float accuracyPercentage = CalculateAccuracyPercentage(timeSpent);
+
+        // Calculate the time off based on the time spent
         float timeOff = CalculateTimeOff(timeSpent);
 
+        // Update the user interface with the time span and time off
         UpdateUI(timespan, timeOff);
 
+        // Log the time off for debugging purposes
         Debug.Log("Time off: " + timeOff);
+        // Log the accuracy percentage for debugging purposes
         Debug.Log("Accuracy: " + accuracyPercentage);
 
+        // Update other classes with the accuracy percentage, time off, and time spent
         UpdateOtherClasses(accuracyPercentage, timeOff, timeSpent);
 
+        // Recreate tasks in the task manager
         taskManager.ReCreateTasks();
-    }
-
-    private TimeSpan CalculateTimeSpent(DateTime endTime)
-    {
-        return endTime - startTime;
     }
 
     private float CalculateAccuracyPercentage(float timeSpent)

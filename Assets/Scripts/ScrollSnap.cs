@@ -15,7 +15,7 @@ public class ScrollSnap : MonoBehaviour
 
     void Start()
     {
-        int textLength = texts.Length;
+        int textLength = texts.Length; 
         distance = new float[textLength];
 
         // Assign values to the text elements based on the interval

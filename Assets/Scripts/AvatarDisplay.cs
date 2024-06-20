@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class AvatarDisplay : MonoBehaviour
 {   
+    // References to the avatar game objects
     public GameObject mainMenuAvatar;
     public GameObject profileAvatar;
     public GameObject shopAvatar;
@@ -13,7 +14,11 @@ public class AvatarDisplay : MonoBehaviour
     public GameObject taskStatsAvatar;
     public GameObject setTimeAvatar;
     public GameObject finishedTaskAvatar;
+
+    // Array of character sprites
     public Sprite[] characterSprites;
+
+
     public static AvatarDisplay instance;
     void Awake()
     {
@@ -24,8 +29,11 @@ public class AvatarDisplay : MonoBehaviour
     }
     void Start()
     {
+        // Update the avatar to the current character
         UpdateAvatar(SaveData.instance.currentCharacter);
     }
+
+    // Update the avatar to the character at the given index
     public void UpdateAvatar(int characterIndex)
     {
         if(characterSprites.Length > 0)
@@ -39,5 +47,4 @@ public class AvatarDisplay : MonoBehaviour
             finishedTaskAvatar.GetComponent<Image>().sprite = characterSprites[characterIndex];
         }
     }
-
 }

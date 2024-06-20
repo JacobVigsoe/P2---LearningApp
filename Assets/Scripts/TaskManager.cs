@@ -64,9 +64,7 @@ public class TaskManager : MonoBehaviour
 {
     public SaveData saveData;
     
-
     // Task list settings
-    public List<TaskInfo> tasks = new List<TaskInfo>();
     public TMP_InputField taskNameInput;
     public Button doneButton;
     private string filePath;
@@ -93,15 +91,19 @@ public class TaskManager : MonoBehaviour
     // The last clicked task
     public string lastClickedTask;
 
+    public List<TaskInfo> tasks = new List<TaskInfo>();
+
     void Awake()
     {
         filePath = Application.persistentDataPath + "/TaskInfo";
     }
+    
     void Start()
     {
         tasks = saveData.LoadTasks();
         ReCreateTasks();
     }
+
     public void AddTask()
     {
         tasks.Add(new TaskInfo
@@ -142,8 +144,12 @@ public class TaskManager : MonoBehaviour
         {
             int rowIndex = tasks.IndexOf(task);
             int columnIndex = tasks.IndexOf(task);
+
+            // Calculate the position of the task
             Vector3 taskPosition = taskParent.position + spawnOffset + new Vector3(columnIndex * (gridCellSize.x + gridSpacing.x), -rowIndex * (gridCellSize.y + gridSpacing.y), 0);
             GameObject newTaskObject = Instantiate(taskPrefab, taskPosition, Quaternion.identity, taskParent);
+
+            // Set the task name and values
             TaskPrefab newTaskPrefab = newTaskObject.GetComponent<TaskPrefab>();
             newTaskPrefab.SetTaskInfo(task.taskName, task.avgPercentage); // Pass info to TaskPrefab
         }
@@ -170,7 +176,6 @@ public class TaskManager : MonoBehaviour
                 TimeSpan time = TimeSpan.FromSeconds(task.avgTimeDeviation);
                 avgTimeDeviation.text = string.Format("{0:D2}hr {1:D2}min", time.Hours, time.Minutes);
             }
-
 
             // DISPLAYING CORRECT LAST TIME SPENT
             float lastSpentSeconds = task.secondsSpent[task.secondsSpent.Count - 1];
