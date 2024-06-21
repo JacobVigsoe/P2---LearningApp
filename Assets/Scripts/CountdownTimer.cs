@@ -4,126 +4,116 @@ using System.IO;
 using System;
 
 public class CountdownTimer : MonoBehaviour
-{
-    public float countdownDuration = 60f; // Initial countdown duration in seconds
+{   
+    // Internal variables
+    private float duration; // Original time picked when starting the timer
+    private DateTime startTime;
 
-    private float originalTime; // Original time picked when starting the timer
-    private float currentTime; // Current time left in the countdown
-    private bool isCountingDown = false; // Flag to track if the countdown is active
-    private AccuracyManager accuracyManager;
-
+    // Script references
     private TaskManager taskManager;
     private WindowGraph windowGraph;
     private CoinsManager coinsManager;
 
-    private DateTime pauseTime;
-    private bool wasCountingDown;
+    // Displaying info about time when finished
+    public TMP_Text estimatedTimeText;
+    public TMP_Text spentTimeText;
+    public TMP_Text minutesOffText;
 
     void Start()
     {
         coinsManager = GameObject.FindObjectOfType<CoinsManager>();
         taskManager = GameObject.FindObjectOfType<TaskManager>();
-        accuracyManager = GameObject.FindObjectOfType<AccuracyManager>();
         windowGraph = GameObject.FindObjectOfType<WindowGraph>();
-        ResetTimer();
     }
-
-    void Update()
+    public void AddTime(float timeToAdd)
     {
-        if (isCountingDown)
-        {
-            currentTime += Time.deltaTime;
-            if (currentTime <= 0)
-            {
-                currentTime = 0;
-                isCountingDown = false;
-                
-            }
-        }
-    }
+        // Getting how long the user aims for
+        duration = timeToAdd;
 
-    public void StartTimer(float duration)
+        // Starting the time
+        StartTimer();
+    }
+    public void StartTimer()
     {
-        originalTime = duration;
-        isCountingDown = true;
+        // Getting the time when the user starts the timer
+        startTime = DateTime.Now;
+
+        Debug.Log(startTime);
     }
-
-    void OnApplicationPause(bool pauseStatus)
-    {
-        Debug.Log(pauseStatus);
-        HandleApplicationStateChange(pauseStatus);
-    }
-
-    void OnApplicationFocus(bool hasFocus)
-    {
-        HandleApplicationStateChange(!hasFocus);
-    }
-
-    private void HandleApplicationStateChange(bool isPaused)
-    {
-        if (isPaused)
-        {
-            // The application is paused (locked, in background, or lost focus)
-            // Save the current time and whether the timer was counting down
-            pauseTime = DateTime.Now;
-            wasCountingDown = isCountingDown;
-            isCountingDown = false;
-        }
-        else
-        {
-            // The application is resumed or regained focus
-            // If the timer was counting down when the app was paused, resume the timer
-            if (wasCountingDown)
-            {
-                // Calculate the duration the application was paused
-                TimeSpan pausedDuration = DateTime.Now - pauseTime;
-
-                // Subtract the paused duration from the current time
-                currentTime -= (float)pausedDuration.TotalSeconds;
-
-                // Ensure currentTime doesn't go below zero
-                if (currentTime < 0)
-                {
-                    currentTime = 0;
-                }
-
-                isCountingDown = true;
-            }
-        }
-    }
-
+   
     public void StopTimer()
     {
-        isCountingDown = false;
+        // Get the current time
+        DateTime endTime = DateTime.Now;
 
-        // Calculate the absolute difference between original time and current time
-        float timeDifference = Mathf.Abs(originalTime - currentTime);
+        // Calculate the time span between the start time and end time
+        TimeSpan timespan = endTime - startTime;
 
-        // Calculate accuracy percentage based on the ratio of time difference to original time
-        float accuracyPercentage = 100f * (1f - (timeDifference / originalTime));
+        // Convert the time span to total seconds
+        float timeSpent = (float)timespan.TotalSeconds;
 
-        if (accuracyPercentage <= 0)
+        // Calculate the accuracy percentage based on the time spent
+        float accuracyPercentage = CalculateAccuracyPercentage(timeSpent);
+
+        // Calculate the time off based on the time spent
+        float timeOff = CalculateTimeOff(timeSpent);
+
+        // Update the user interface with the time span and time off
+        UpdateUI(timespan, timeOff);
+
+        // Log the time off for debugging purposes
+        Debug.Log("Time off: " + timeOff);
+        // Log the accuracy percentage for debugging purposes
+        Debug.Log("Accuracy: " + accuracyPercentage);
+
+        // Update other classes with the accuracy percentage, time off, and time spent
+        UpdateOtherClasses(accuracyPercentage, timeOff, timeSpent);
+
+        // Recreate tasks in the task manager
+        taskManager.ReCreateTasks();
+    }
+
+    private float CalculateAccuracyPercentage(float timeSpent)
+    {
+        float accuracyPercentage = 100f * (timeSpent / duration);
+
+        if (timeSpent > duration)
         {
-            accuracyPercentage = 0;
+            accuracyPercentage = 200f - accuracyPercentage;
         }
-        Debug.Log("Accuracy Percentage: " + accuracyPercentage.ToString("0.00") + "%");
 
+        return Math.Max(accuracyPercentage, 0);
+    }
+
+    private float CalculateTimeOff(float timeSpent)
+    {
+        return Math.Abs(duration - timeSpent);
+    }
+
+    private void UpdateUI(TimeSpan timespan, float timeOff)
+    {
+        estimatedTimeText.text = ConvertSecondsToHoursMinutes(duration);
+        spentTimeText.text = timespan.ToString(@"hh\:mm");
+        minutesOffText.text = ConvertSecondsToHoursMinutes(Math.Abs(timeOff)) + " off!";
+    }
+
+    private void UpdateOtherClasses(float accuracyPercentage, float timeOff, float timeSpent)
+    {
         coinsManager.UpdateExperienceAmount(accuracyPercentage);
-        taskManager.WriteToTask(timeDifference, accuracyPercentage, currentTime, originalTime);
+        taskManager.WriteToTask(timeOff, accuracyPercentage, timeSpent, duration);
         windowGraph.UpdateGraph();
     }
 
-   
-    public void ResetTimer()
+
+    /// <summary>
+    /// Converts a float into a string in the format hours:minutes
+    /// </summary>
+    /// <param name="seconds"></param>
+    /// <returns></returns>
+    public string ConvertSecondsToHoursMinutes(float seconds)
     {
-        currentTime = countdownDuration;;
+        TimeSpan time = TimeSpan.FromSeconds(seconds);
+        return string.Format("{0:D2}h:{1:D2}m", time.Hours, time.Minutes);
     }
 
-    public void AddTime(float timeToAdd)
-    {
-        currentTime = 0;
-        originalTime = timeToAdd;
-
-        StartTimer(originalTime);
-    }
 }

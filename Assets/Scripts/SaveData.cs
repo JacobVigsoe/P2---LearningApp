@@ -30,14 +30,16 @@ public class SaveData : MonoBehaviour
 
     void Awake()
     {
+        // Create the directory for the data we want to save
         CreateDirectory(Application.persistentDataPath + "/SaveData/");
         CreateDirectory(Application.persistentDataPath + "/SaveData/TaskData/");
+
+        // Set the file paths
         directoryPath = Application.persistentDataPath + "/SaveData/";
         taskDataPath = directoryPath + "/TaskData/";
 
         userDataPath = directoryPath;
         userData = directoryPath + "UserData.json";
-        Debug.Log(userDataPath);
 
         if (instance != null && instance != this)
             Destroy(gameObject);
@@ -52,14 +54,6 @@ public class SaveData : MonoBehaviour
     {
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
-    }
-
-    void Start()
-    {
-        if (taskManager.tasks.Count == 0)
-        {
-            // Lav en besked om at man skal trykke plus!
-        }
     }
 
     public void SaveTasks(TaskInfo task)
@@ -111,7 +105,7 @@ public class SaveData : MonoBehaviour
         data.charactersUnlocked = charactersUnlocked;
 
         // Save the UserData class to a json file
-        string json = JsonUtility.ToJson(data);
+        string json = JsonUtility.ToJson(data, true);
 
         File.WriteAllText(userData, json);
     }
@@ -128,6 +122,7 @@ public class SaveData : MonoBehaviour
         currentCharacter = data.currentCharacter;
         charactersUnlocked = data.charactersUnlocked;
     }
+    
     public void AdjustMoney(int amount)
     {
         money += amount;
@@ -137,6 +132,7 @@ public class SaveData : MonoBehaviour
         SaveUserData();
     }
 }
+
 public class UserData
 {
     public int money;

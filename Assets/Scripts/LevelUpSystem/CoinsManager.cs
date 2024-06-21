@@ -38,39 +38,98 @@ public class CoinsManager : MonoBehaviour
         string formattedCurrentCoinsText = "Coins " + coinValueText;
 
     }
-
-    public void UpdateExperienceAmount(float Coins)
+    /*
+    public void UpdateExperienceAmount(float percent)
     {
         // Check if valueToCheck is between minValue and maxValue
-        if (Coins > 0 && Coins < 20)
+        if (percent >= 0 && percent < 20)
         {
-            coinsToClaimText.text = 20.ToString() + " Coins";
+            coinsToClaimText.text = 20.ToString();
             saveData.AdjustMoney(20);
             Debug.Log("Gave 20 Coins");
         }
-        else if (Coins > 20 && Coins < 40)
+        else if (percent > 20 && percent < 40)
         {
-            coinsToClaimText.text = 40.ToString() + " Coins";
+            coinsToClaimText.text = 40.ToString();
             saveData.AdjustMoney(40);
             Debug.Log("Gave 40 Coins");
         }
-        else if (Coins > 40 && Coins < 60)
+        else if (percent > 40 && percent < 60)
         {
-            coinsToClaimText.text = 160.ToString() + " Coins";
+            coinsToClaimText.text = 160.ToString();
             saveData.AdjustMoney(160);
             Debug.Log("Gave 160 Coins");
         }
-        else if (Coins > 60 && Coins < 80)
+        else if (percent > 60 && percent < 80)
         {
-            coinsToClaimText.text = 280.ToString() + " Coins";
+            coinsToClaimText.text = 280.ToString();
             saveData.AdjustMoney(280);
             Debug.Log("Gave 280 Coins");
         }
-        else if (Coins > 80 && Coins < 100)
+        else if (percent > 80 && percent < 100)
         {
-            coinsToClaimText.text = 400.ToString() + " Coins";
+            coinsToClaimText.text = 400.ToString();
             saveData.AdjustMoney(400);
             Debug.Log("Gave 400 Coins");
+        }
+    }
+    */
+    public void UpdateExperienceAmount(float percent)
+    {
+        int caseSwitch = (int)percent / 20;
+
+        switch (caseSwitch)
+        {
+            case 0:
+            case 1:
+                coinsToClaimText.text = 20.ToString();
+                saveData.AdjustMoney(20);
+                Debug.Log("Gave 20 Coins");
+                break;
+            case 2:
+                coinsToClaimText.text = 40.ToString();
+                saveData.AdjustMoney(40);
+                Debug.Log("Gave 40 Coins");
+                break;
+            case 3:
+                coinsToClaimText.text = 160.ToString();
+                saveData.AdjustMoney(160);
+                Debug.Log("Gave 160 Coins");
+                break;
+            case 4:
+                coinsToClaimText.text = 280.ToString();
+                saveData.AdjustMoney(280);
+                Debug.Log("Gave 280 Coins");
+                break;
+            case 5:
+                coinsToClaimText.text = 400.ToString();
+                saveData.AdjustMoney(400);
+                Debug.Log("Gave 400 Coins");
+                break;
+            case 6: // 120 > percent >= 100
+                coinsToClaimText.text = 280.ToString();
+                saveData.AdjustMoney(280);
+                Debug.Log("Gave 500 Coins");
+                break;
+            case 7: // 140 > percent >= 120
+                coinsToClaimText.text = 160.ToString();
+                saveData.AdjustMoney(160);
+                Debug.Log("Gave 600 Coins");
+                break;
+                case 8: // 160 > percent >= 140
+                coinsToClaimText.text = 40.ToString();
+                saveData.AdjustMoney(40);
+                Debug.Log("Gave 700 Coins");
+                break;
+            case 9: // 180 > percent >= 160
+                coinsToClaimText.text = 20.ToString();
+                saveData.AdjustMoney(20);
+                Debug.Log("Gave 800 Coins");
+                break;
+                
+            default:
+                Debug.Log("Invalid percentage");
+                break;
         }
     }
 

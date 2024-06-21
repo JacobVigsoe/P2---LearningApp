@@ -149,10 +149,4 @@ public class AvatarSelection : MonoBehaviour
         //Saving data
         SaveData.instance.SaveUserData();
     }
-
-    public void Confirm()
-    {
-
-    }
-
 }

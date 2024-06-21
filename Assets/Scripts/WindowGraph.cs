@@ -163,6 +163,7 @@ public class WindowGraph : MonoBehaviour
             }
             lastCircleGameObject = circleGameObject;
 
+/*
             RectTransform labelX = Instantiate(labelTemplateX);
             labelX.SetParent(graphContainer);
             labelX.gameObject.SetActive(true);
@@ -176,10 +177,11 @@ public class WindowGraph : MonoBehaviour
             dashY.gameObject.SetActive(true);
             dashY.anchoredPosition3D = new Vector3(xPosition, -35f, 0f);
             gameObjectList.Add(dashY.gameObject);
-
+*/
             xIndex++;
         }
 
+/*
         int seperatorCount = 5;
         for (int i = 0;i <= seperatorCount;i++) 
         {
@@ -198,6 +200,7 @@ public class WindowGraph : MonoBehaviour
             dashX.anchoredPosition3D = new Vector3(-35f, normalizedValue * graphHeight, 0f);
             gameObjectList.Add(dashX.gameObject);
         }
+*/
     }
 
     private GameObject CreateDotConnection(Vector2 dotPositionA, Vector2 dotPositionB, int graphIndex)
